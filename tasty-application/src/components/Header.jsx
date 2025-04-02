@@ -4,7 +4,17 @@ import { AuthContext } from '../context/AuthContext'
 import SearchBar from './SearchBar'
 
 const Header = () => {
-  const { user, logout } = useContext(AuthContext)
+  //   const { user, logout } = useContext(AuthContext)
+
+  // Mock user for testing purposes
+  const user = {
+    name: 'John Doe',
+    email: 'john.doe@example.com'
+  }
+  const logout = () => {
+    console.log('User logged out')
+  }
+
   const navigate = useNavigate()
 
   const handleLogout = () => {
@@ -46,7 +56,7 @@ const Header = () => {
             {/* My Home (Visible for Logged-In Users) */}
             {user && (
               <li className="nav-item">
-                <Link className="nav-link d-flex align-items-center" to="/dashboard">
+                <Link className="nav-link d-flex align-items-center" to="/myhome">
                   <i className="bi bi-house-heart me-1"></i> My Home
                 </Link>
               </li>
