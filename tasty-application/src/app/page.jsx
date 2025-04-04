@@ -22,7 +22,7 @@ const Homepage = () => {
       try {
         // Fetch random recipe only if it's not already set
         if (!randomRecipe) {
-          const feedData = await getFeeds(5, '+0700', false, 0)
+          const feedData = await getFeeds(5, '+0700', false)
           if (feedData && feedData.results && feedData.results.length > 0) {
             const recipeItems = feedData.results.filter((item) => item.type === 'featured')
             if (recipeItems.length > 0) {
