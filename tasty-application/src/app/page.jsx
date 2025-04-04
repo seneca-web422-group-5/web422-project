@@ -1,12 +1,27 @@
 import React, { useEffect, useState } from 'react'
-import { searchRecipes } from '../lib/api'
+import { getPopularCategories, searchRecipes } from '../lib/api'
+import PopularCategory from '../components/PopularCategory'
 
 const Homepage = () => {
   const [recipes, setRecipes] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [categories, setCategories] = useState([])
 
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getPopularCategories()
+        console.log('Fetched Categories Data:', data)
+        const popularCategories = data.results
+          .filter((tag) => tag.type === 'meal')
+          .map((tag) => ({ name: tag.display_name }))
+        setCategories(popularCategories)
+      } catch (err) {
+        console.error('Failed to fetch categories:', err)
+      }
+    }
+
     const fetchRecipes = async () => {
       try {
         const data = await searchRecipes('chicken') // Example query
@@ -17,7 +32,7 @@ const Homepage = () => {
         setLoading(false)
       }
     }
-
+    fetchCategories()
     fetchRecipes()
   }, [])
 
@@ -31,6 +46,7 @@ const Homepage = () => {
 
   return (
     <div>
+      <PopularCategory categories={categories} />
       <h1>Recipe List</h1>
       <ul>
         {recipes.map((recipe) => (
