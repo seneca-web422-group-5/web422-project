@@ -23,12 +23,10 @@ const Homepage = () => {
         // Fetch random recipe only if it's not already set
         if (!randomRecipe) {
           const feedData = await getFeeds(5, '+0700', false, 0)
-          console.log(feedData)
           if (feedData && feedData.results && feedData.results.length > 0) {
             const recipeItems = feedData.results.filter((item) => item.type === 'featured')
             if (recipeItems.length > 0) {
               setRandomRecipe(recipeItems[0].item) // Save to context
-              console.log(recipeItems[0].item)
             } else {
               console.warn('No recipe items found in the feed.')
             }
