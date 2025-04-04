@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { searchRecipes } from '../lib/api'
+import JoinUs from '../components/JoinUs'
 
 const Homepage = () => {
   const [recipes, setRecipes] = useState([])
@@ -31,6 +32,7 @@ const Homepage = () => {
 
   return (
     <div>
+      <JoinUs />
       <h1>Recipe List</h1>
       <ul>
         {recipes.map((recipe) => (
