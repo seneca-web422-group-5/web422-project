@@ -1,24 +1,27 @@
 import React, { useEffect, useState } from 'react'
-import { searchRecipes } from '../lib/api'
+import { getFeeds, searchRecipes } from '../lib/api'
+import RecommendByUs from '../components/RecommendByUs'
 
 const Homepage = () => {
-  const [recipes, setRecipes] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [recommendations, setRecommendations] = useState([])
 
   useEffect(() => {
-    const fetchRecipes = async () => {
+    const fetchRecommendations = async () => {
       try {
-        const data = await searchRecipes('chicken') // Example query
-        setRecipes(data.results || [])
+        const data = await getFeeds(3, '+0700', 0)
+        if (data && data.results) {
+          setRecommendations(data.results)
+        }
         setLoading(false)
       } catch (err) {
-        setError('Failed to fetch recipes.')
+        setError('Failed to fetch recommendations.')
         setLoading(false)
       }
     }
 
-    fetchRecipes()
+    fetchRecommendations()
   }, [])
 
   if (loading) {
@@ -31,17 +34,7 @@ const Homepage = () => {
 
   return (
     <div>
-      <h1>Recipe List</h1>
-      <ul>
-        {recipes.map((recipe) => (
-          <li key={recipe.id}>
-            <h2>{recipe.name}</h2>
-            {recipe.thumbnail_url && (
-              <img src={recipe.thumbnail_url} alt={recipe.name} width="200" />
-            )}
-          </li>
-        ))}
-      </ul>
+      <RecommendByUs recommendations={recommendations} />
     </div>
   )
 }
