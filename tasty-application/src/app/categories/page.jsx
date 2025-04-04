@@ -1,7 +1,79 @@
-import React from 'react'
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import api from '../../lib/api';
+import Pagination from '../../components/Pagination';
+import CategoryCard from '../../components/CategoryCard';
 
 const Categories = () => {
-  return <div>Categories Page</div>
-}
+  const [categories, setCategories] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-export default Categories
+  const ITEMS_PER_PAGE = 12;
+
+  const totalPages = Math.ceil(categories.length / ITEMS_PER_PAGE);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        const categoryData = await api.getTags();
+        
+        const uniqueCategories = Array.from(
+          new Map(categoryData.results.map(cat => [cat.name, cat])).values()
+        );
+
+        // Sort categories alphabetically
+        uniqueCategories.sort((a, b) => a.display_name.localeCompare(b.display_name));
+
+        setCategories(uniqueCategories);
+        setLoading(false);
+      } catch (err) {
+        setError("Failed to fetch categories.");
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  const indexOfLast = currentPage * ITEMS_PER_PAGE;
+  const indexOfFirst = indexOfLast - ITEMS_PER_PAGE;
+  const currentCategories = categories.slice(indexOfFirst, indexOfLast);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  return (
+    <>
+      <div>
+        <h1>Categories</h1>
+        <div className="categories-grid">
+          {currentCategories.map((category) => (
+            <Link key={category.name} to={`/categories/${category.display_name}`}>
+              <CategoryCard category={category} />
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
+    </>
+  );
+};
+
+export default Categories;

@@ -31,14 +31,18 @@ const fetchFromTastyAPI = async (endpoint, params = {}) => {
 
 // Export functions
 export const getRecipeDetails = (id) => fetchFromTastyAPI("recipes/detail", { id });
-export const searchRecipes = (query) => fetchFromTastyAPI("recipes/list", { q: query });
+export const searchRecipes = (query = "", from = 0, size = 20) =>
+  fetchFromTastyAPI("recipes/list", { q: query, from, size });
+
 export const getAutoComplete = (query) => fetchFromTastyAPI("recipes/auto-complete", { prefix: query });
+export const getTags = (query) => fetchFromTastyAPI("tags/list");
 
 // Assign the object to a variable
 const api = {
     getRecipeDetails,
     searchRecipes,
     getAutoComplete,
+    getTags,
   };
   
   // Export the variable as the default export
