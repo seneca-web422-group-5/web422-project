@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getFeeds, searchRecipes } from '../lib/api'
+import { useRandomRecipe } from '../context/RandomRecipeContext'
 import JoinUs from '../components/JoinUs'
 
 const Homepage = () => {
   const [recipes, setRecipes] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [randomRecipe, setRandomRecipe] = useState(null)
+  const { randomRecipe, setRandomRecipe } = useRandomRecipe()
   const navigate = useNavigate() // for randomRecipe
 
   const handleRecipeClick = () => {
@@ -19,19 +20,18 @@ const Homepage = () => {
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        // Fetch random recipe using feeds/list
-        const feedData = await getFeeds(5, '+0700', false, 0)
-        console.log(feedData)
-        if (feedData && feedData.results && feedData.results.length > 0) {
-          // Filter for items of type 'featured'
-          const recipeItems = feedData.results.filter((item) => item.type === 'featured')
-
-          if (recipeItems.length > 0) {
-            // Pick the first recipe from the filtered list
-            setRandomRecipe(recipeItems[0].item)
-            console.log(recipeItems[0].item)
-          } else {
-            console.warn('No recipe items found in the feed.')
+        // Fetch random recipe only if it's not already set
+        if (!randomRecipe) {
+          const feedData = await getFeeds(5, '+0700', false, 0)
+          console.log(feedData)
+          if (feedData && feedData.results && feedData.results.length > 0) {
+            const recipeItems = feedData.results.filter((item) => item.type === 'featured')
+            if (recipeItems.length > 0) {
+              setRandomRecipe(recipeItems[0].item) // Save to context
+              console.log(recipeItems[0].item)
+            } else {
+              console.warn('No recipe items found in the feed.')
+            }
           }
         }
 
@@ -46,7 +46,7 @@ const Homepage = () => {
     }
 
     fetchRecipes()
-  }, [])
+  }, [randomRecipe, setRandomRecipe]) // Dependency array includes context state
 
   if (loading) {
     return <div>Loading...</div>
