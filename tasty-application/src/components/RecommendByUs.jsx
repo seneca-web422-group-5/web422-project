@@ -20,11 +20,11 @@ const RecommendByUs = ({ recommendations = [] }) => {
               )}
             </div>
             <h3 className="recommend-card-title">{item.name}</h3>
-            <p className="recommend-card-author">{item.author || 'Unknown Author'}</p>
+            <p className="recommend-card-author">{item.author}</p>
             <div className="recommend-card-tags">
-              {item.tags && item.tags.length > 0 ? (
-                item.tags.map((tag, index) => (
-                  <span key={`${tag}-${index}`} className="recommend-card-tag">
+              {item.tags.length > 0 ? (
+                item.tags.slice(0, 5).map((tag, index) => (
+                  <span key={`${item.id}-${tag}-${index}`} className="recommend-card-tag">
                     {tag}
                   </span>
                 ))
