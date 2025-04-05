@@ -12,10 +12,10 @@ const categoryImages = {
 const PopularCategory = ({ categories }) => {
   return (
     <div className="popular-category-container">
-      <h2 className="mb-4">Popular Category</h2>
+      <h2 className="mb-4">Popular Categories</h2>
       <div className="category-list d-flex justify-content-center">
         {categories.map((category, index) => (
-          <div key={index} className="category-item ms-2">
+          <div key={category.name} className="category-item ms-2">
             {/* Check if the category has an image */}
             {categoryImages[category.name] ? (
               <img
