@@ -36,7 +36,8 @@ const Homepage = () => {
             name: item?.name,
             thumbnail_url: item?.thumbnail_url,
             author: item?.credits?.[0]?.name || 'Unknown Author',
-            tags: item?.tags?.map((tag) => tag.display_name) || []
+            tags: item?.tags?.map((tag) => tag.display_name) || [],
+            user_ratings: item?.user_ratings || null
           }))
           console.log('Mapped Recommendations:', mappedRecommendations)
           setRecommendations(mappedRecommendations)
