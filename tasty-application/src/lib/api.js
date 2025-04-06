@@ -32,7 +32,7 @@ const fetchFromTastyAPI = async (endpoint, params = {}) => {
 // Export functions
 export const getRecipeDetails = (id) => fetchFromTastyAPI('recipes/detail', { id })
 export const searchRecipes = (query) => fetchFromTastyAPI('recipes/list', { q: query })
-export const getAutoComplete = (query) =>
+export const getAutoCompleteSuggestions = (query) =>
   fetchFromTastyAPI('recipes/auto-complete', { prefix: query })
 export const getPopularCategories = async () => {
   return fetchFromTastyAPI('tags/list')
@@ -46,7 +46,7 @@ export const getLatestRecipes = (from = 0, size = 100, tags = 'under_30_minutes'
 const api = {
   getRecipeDetails,
   searchRecipes,
-  getAutoComplete,
+  getAutoCompleteSuggestions,
   getPopularCategories,
   getFeeds,
   getLatestRecipes
