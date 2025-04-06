@@ -24,12 +24,16 @@ const Homepage = () => {
       // Check if randomRecipe is already in localStorage
       const cachedRandomRecipe = localStorage.getItem('randomRecipe')
       if (cachedRandomRecipe) {
-        const { data, timestamp } = JSON.parse(cachedRandomRecipe)
-        const isExpired = Date.now() - timestamp > 86400000 // 1 day in milliseconds
-        if (!isExpired) {
-          setRandomRecipe(data)
-          console.log('Loaded randomRecipe from localStorage')
-          return
+        try {
+          const { data, timestamp } = JSON.parse(cachedRandomRecipe)
+          const isExpired = Date.now() - timestamp > 86400000 // 1 day in milliseconds
+          if (!isExpired) {
+            setRandomRecipe(data)
+            console.log('Loaded randomRecipe from localStorage')
+            return
+          }
+        } catch (e) {
+          console.error('Failed to parse cached randomRecipe:', e)
         }
       }
 
