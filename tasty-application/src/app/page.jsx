@@ -23,6 +23,19 @@ const Homepage = () => {
   useEffect(() => {
     const fetchRecommendations = async () => {
       try {
+        // Fetch random recipe only if it's not already set
+        if (!randomRecipe) {
+          const feedData = await getFeeds(5, '+0700', false)
+          if (feedData && feedData.results && feedData.results.length > 0) {
+            const recipeItems = feedData.results.filter((item) => item.type === 'featured')
+            if (recipeItems.length > 0) {
+              setRandomRecipe(recipeItems[0].item) // Save to context
+            } else {
+              console.warn('No recipe items found in the feed.')
+            }
+          }
+        }
+
         const data = await getFeeds(3, '+0700', 0)
         console.log('Raw API Data:', data)
 
