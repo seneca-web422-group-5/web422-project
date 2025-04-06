@@ -1,7 +1,15 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import './RecommendByUs.css'
 
 const RecommendByUs = ({ recommendations = [] }) => {
+  const navigate = useNavigate()
+  const handleRecipeClick = (id) => {
+    if (id) {
+      navigate(`/recipe/${id}`)
+    }
+  }
+
   if (!recommendations.length) {
     return <div>No recommendations available.</div>
   }
@@ -26,7 +34,7 @@ const RecommendByUs = ({ recommendations = [] }) => {
       <h2 className="mb-4">Recommend by Us</h2>
       <div className="recommend-list">
         {recommendations.map((item) => (
-          <div key={item.id} className="recommend-card">
+          <div key={item.id} className="recommend-card" onClick={() => handleRecipeClick(item.id)} style={{ cursor: 'pointer' }}>
             <div className="recommend-card-image">
               {item.thumbnail_url ? (
                 <img src={item.thumbnail_url} alt={item.name} />
@@ -35,7 +43,7 @@ const RecommendByUs = ({ recommendations = [] }) => {
               )}
             </div>
             <h3 className="recommend-card-title">{item.name}</h3>
-            <p className="recommend-card-author">{item.author}</p>
+            <p className="recommend-card-author">by {item.author}</p>
             {item.user_ratings && item.user_ratings.score ? (
               <div>
                 {renderStars(item.user_ratings.score)}
