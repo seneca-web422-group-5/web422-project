@@ -24,6 +24,8 @@ const Homepage = () => {
     const fetchRecommendations = async () => {
       try {
         const data = await getFeeds(3, '+0700', 0)
+        console.log('Raw API Data:', data)
+
         if (data && data.results) {
           const popularRecipesCarousel = data.results.find(
             (result) => result.type === 'carousel' && result.name === 'Popular Recipes This Week'
@@ -37,6 +39,7 @@ const Homepage = () => {
             tags: item?.tags?.map((tag) => tag.display_name) || [],
             user_ratings: item?.user_ratings || null
           }))
+          console.log('Mapped Recommendations:', mappedRecommendations)
           setRecommendations(mappedRecommendations)
         }
       } catch (err) {
@@ -48,6 +51,7 @@ const Homepage = () => {
     const fetchCategories = async () => {
       try {
         const data = await getPopularCategories()
+        console.log('Fetched Categories Data:', data)
         const popularCategories = data.results
           .filter((tag) => tag.type === 'meal')
           .map((tag) => ({ name: tag.display_name }))
@@ -58,30 +62,9 @@ const Homepage = () => {
       }
     }
 
-    const fetchRecipes = async () => {
-      try {
-        if (!randomRecipe) {
-          const feedData = await getFeeds(5, '+0700', false)
-          if (feedData && feedData.results && feedData.results.length > 0) {
-            const recipeItems = feedData.results.filter((item) => item.type === 'featured')
-            if (recipeItems.length > 0) {
-              setRandomRecipe(recipeItems[0].item)
-            } else {
-              console.warn('No recipe items found in the feed.')
-            }
-          }
-        }
-      } catch (err) {
-        console.error('Failed to fetch recipes:', err)
-        setError('Failed to fetch recipes.')
-      }
-    }
-
     const fetchData = async () => {
       setLoading(true)
-      await fetchRecommendations()
-      await fetchCategories()
-      await fetchRecipes()
+      await Promise.all([fetchRecommendations(), fetchCategories()])
       setLoading(false)
     }
 

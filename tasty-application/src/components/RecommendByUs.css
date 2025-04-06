@@ -70,3 +70,18 @@
     font-size: 12px;
     margin: 2px;
   }
+
+  .recommend-card-stars {
+    display: flex;
+    gap: 2px;
+    margin: 8px 0;
+  }
+  
+  .star {
+    font-size: 16px;
+    color: #ccc;
+  }
+  
+  .star.filled {
+    color: #ffc107;
+  }
