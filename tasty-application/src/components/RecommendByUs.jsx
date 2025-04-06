@@ -15,6 +15,7 @@ const RecommendByUs = ({ recommendations = [] }) => {
   }
 
   const handleMoreDetailsClick = (recipe) => {
+    console.log('More details clicked for recipe:', recipe)
     setSelectedRecipe(recipe)
     setShowModal(true)
     setPage(1)

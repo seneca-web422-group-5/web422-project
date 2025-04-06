@@ -4,13 +4,15 @@ import { getFeeds, getPopularCategories } from '../lib/api'
 import JoinUs from '../components/JoinUs'
 import PopularCategory from '../components/PopularCategory'
 import RecommendByUs from '../components/RecommendByUs'
+import LatestRecipes from '../components/LatestRecipes'
 
 const Homepage = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [categories, setCategories] = useState([])
-  const [recommendations, setRecommendations] = useState([])
   const [randomRecipe, setRandomRecipe] = useState(null)
+  const [recommendations, setRecommendations] = useState([])
+  const [latestRecipes, setLatestRecipes] = useState([])
   const navigate = useNavigate()
 
   const handleRecipeClick = () => {
@@ -94,7 +96,8 @@ const Homepage = () => {
             cook_time_minutes: item?.cook_time_minutes || null,
             total_time_minutes: item?.total_time_minutes || null,
             servings: item?.servings || null,
-            nutrition: item?.nutrition || null
+            nutrition: item?.nutrition || null,
+            created_at: item?.created_at || null 
           })) || []
 
           localStorage.setItem(
@@ -107,6 +110,34 @@ const Homepage = () => {
       } catch (err) {
         console.error('Error fetching recommendations:', err)
         setError('Failed to fetch recommendations.')
+      }
+    }
+
+    const fetchLatestRecipes = async () => {
+      try {
+        const data = await getFeeds(100, '+0700', 0)
+        console.log('API Response:', data)
+    
+        if (data && data.results) {
+          const allRecipes = data.results
+            .filter((result) => result.type === 'item' && result.item?.id !== undefined && result.item?.created_at !== null)
+            .map((result) => ({
+              id: result.item?.id,
+              name: result.item?.name,
+              thumbnail_url: result.item?.thumbnail_url,
+              created_at: result.item?.created_at
+            }))
+    
+          console.log('Filtered Recipes:', allRecipes)
+    
+          // Sort recipes by created_at in descending order
+          const sortedRecipes = allRecipes.sort((a, b) => b.created_at - a.created_at)
+    
+          setLatestRecipes(sortedRecipes)
+        }
+      } catch (err) {
+        console.error('Error fetching latest recipes:', err)
+        setError('Failed to fetch latest recipes.')
       }
     }
 
@@ -144,7 +175,7 @@ const Homepage = () => {
 
     const fetchData = async () => {
       setLoading(true)
-      await Promise.all([fetchRandomRecipe(), fetchRecommendations(), fetchCategories()])
+      await Promise.all([fetchRandomRecipe(), fetchRecommendations(), fetchCategories(), fetchLatestRecipes()])
       setLoading(false)
     }
 
@@ -185,6 +216,7 @@ const Homepage = () => {
       <PopularCategory categories={categories} />
       <JoinUs />
       <RecommendByUs recommendations={recommendations} />
+      <LatestRecipes recipes={latestRecipes} />
     </div>
   )
 }
