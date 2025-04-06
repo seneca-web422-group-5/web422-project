@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getFeeds, getPopularCategories } from '../lib/api'
-import { useRandomRecipe } from '../context/RandomRecipeContext'
 import JoinUs from '../components/JoinUs'
 import PopularCategory from '../components/PopularCategory'
 import RecommendByUs from '../components/RecommendByUs'
@@ -11,7 +10,7 @@ const Homepage = () => {
   const [error, setError] = useState(null)
   const [categories, setCategories] = useState([])
   const [recommendations, setRecommendations] = useState([])
-  const { randomRecipe, setRandomRecipe } = useRandomRecipe()
+  const [randomRecipe, setRandomRecipe] = useState(null)
   const navigate = useNavigate()
 
   const handleRecipeClick = () => {
@@ -21,36 +20,58 @@ const Homepage = () => {
   }
 
   useEffect(() => {
-    const fetchRecommendations = async () => {
-      // Check if recommendations are already in localStorage
-      const cachedRecommendations = localStorage.getItem('recommendations')
-      if (cachedRecommendations) {
-        const { data, timestamp } = JSON.parse(cachedRecommendations)
+    const fetchRandomRecipe = async () => {
+      // Check if randomRecipe is already in localStorage
+      const cachedRandomRecipe = localStorage.getItem('randomRecipe')
+      if (cachedRandomRecipe) {
+        const { data, timestamp } = JSON.parse(cachedRandomRecipe)
         const isExpired = Date.now() - timestamp > 86400000 // 1 day in milliseconds
         if (!isExpired) {
-          setRecommendations(data)
-          console.log('Loaded recommendations from localStorage')
+          setRandomRecipe(data)
+          console.log('Loaded randomRecipe from localStorage')
           return
         }
       }
 
+      // Fetch a new random recipe from the API
       try {
-        // Fetch random recipe only if it's not already set
-        if (!randomRecipe) {
-          const feedData = await getFeeds(5, '+0700', false)
-          if (feedData && feedData.results && feedData.results.length > 0) {
-            const recipeItems = feedData.results.filter((item) => item.type === 'featured')
-            if (recipeItems.length > 0) {
-              setRandomRecipe(recipeItems[0].item) // Save to context
-            } else {
-              console.warn('No recipe items found in the feed.')
-            }
+        const feedData = await getFeeds(5, '+0700', false)
+        if (feedData && feedData.results && feedData.results.length > 0) {
+          const recipeItems = feedData.results.filter((item) => item.type === 'featured')
+          if (recipeItems.length > 0) {
+            const newRandomRecipe = recipeItems[0].item
+            setRandomRecipe(newRandomRecipe)
+
+            // Save to localStorage with a timestamp
+            localStorage.setItem(
+              'randomRecipe',
+              JSON.stringify({ data: newRandomRecipe, timestamp: Date.now() })
+            )
+            console.log('Saved randomRecipe to localStorage')
+          } else {
+            console.warn('No recipe items found in the feed.')
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching randomRecipe:', err)
+        setError('Failed to fetch random recipe.')
+      }
+    }
+
+    const fetchRecommendations = async () => {
+      try {
+        const cachedRecommendations = localStorage.getItem('recommendations')
+        if (cachedRecommendations) {
+          const { data, timestamp } = JSON.parse(cachedRecommendations)
+          const isExpired = Date.now() - timestamp > 86400000 // 1 day in milliseconds
+          if (!isExpired) {
+            setRecommendations(data)
+            console.log('Loaded recommendations from localStorage')
+            return
           }
         }
 
         const data = await getFeeds(3, '+0700', 0)
-        console.log('Raw API Data:', data)
-
         if (data && data.results) {
           const popularRecipesCarousel = data.results.find(
             (result) => result.type === 'carousel' && result.name === 'Popular Recipes This Week'
@@ -64,7 +85,6 @@ const Homepage = () => {
             user_ratings: item?.user_ratings || null
           })) || []
 
-          // Save recommendations to localStorage with a timestamp
           localStorage.setItem(
             'recommendations',
             JSON.stringify({ data: mappedRecommendations, timestamp: Date.now() })
@@ -80,7 +100,6 @@ const Homepage = () => {
 
     const fetchCategories = async () => {
       try {
-        // Check if categories are already in localStorage
         const cachedCategories = localStorage.getItem('categories')
         if (cachedCategories) {
           const { data, timestamp } = JSON.parse(cachedCategories)
@@ -92,14 +111,12 @@ const Homepage = () => {
           }
         }
 
-        // Fetch categories from API
         const data = await getPopularCategories()
         if (data && data.results) {
           const popularCategories = data.results
             .filter((tag) => tag.type === 'meal')
             .map((tag) => ({ name: tag.display_name }))
 
-          // Save categories to localStorage with a timestamp
           localStorage.setItem(
             'categories',
             JSON.stringify({ data: popularCategories, timestamp: Date.now() })
@@ -115,12 +132,12 @@ const Homepage = () => {
 
     const fetchData = async () => {
       setLoading(true)
-      await Promise.all([fetchRecommendations(), fetchCategories()])
+      await Promise.all([fetchRandomRecipe(), fetchRecommendations(), fetchCategories()])
       setLoading(false)
     }
 
     fetchData()
-  }, [randomRecipe, setRandomRecipe])
+  }, [])
 
   if (loading) {
     return <div>Loading...</div>
