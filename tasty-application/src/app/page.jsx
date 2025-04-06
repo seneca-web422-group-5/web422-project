@@ -22,6 +22,18 @@ const Homepage = () => {
 
   useEffect(() => {
     const fetchRecommendations = async () => {
+      // Check if recommendations are already in localStorage
+      const cachedRecommendations = localStorage.getItem('recommendations')
+      if (cachedRecommendations) {
+        const { data, timestamp } = JSON.parse(cachedRecommendations)
+        const isExpired = Date.now() - timestamp > 86400000 // 1 day in milliseconds
+        if (!isExpired) {
+          setRecommendations(data)
+          console.log('Loaded recommendations from localStorage')
+          return
+        }
+      }
+
       try {
         // Fetch random recipe only if it's not already set
         if (!randomRecipe) {
@@ -43,16 +55,21 @@ const Homepage = () => {
           const popularRecipesCarousel = data.results.find(
             (result) => result.type === 'carousel' && result.name === 'Popular Recipes This Week'
           )
-          const popularRecipes = popularRecipesCarousel?.items || []
-          const mappedRecommendations = popularRecipes.map((item) => ({
+          const mappedRecommendations = popularRecipesCarousel?.items?.map((item) => ({
             id: item?.id,
             name: item?.name,
             thumbnail_url: item?.thumbnail_url,
             author: item?.credits?.[0]?.name || 'Unknown Author',
             tags: item?.tags?.map((tag) => tag.display_name) || [],
             user_ratings: item?.user_ratings || null
-          }))
-          console.log('Mapped Recommendations:', mappedRecommendations)
+          })) || []
+
+          // Save recommendations to localStorage with a timestamp
+          localStorage.setItem(
+            'recommendations',
+            JSON.stringify({ data: mappedRecommendations, timestamp: Date.now() })
+          )
+          console.log('Saved recommendations to localStorage')
           setRecommendations(mappedRecommendations)
         }
       } catch (err) {
@@ -63,12 +80,33 @@ const Homepage = () => {
 
     const fetchCategories = async () => {
       try {
+        // Check if categories are already in localStorage
+        const cachedCategories = localStorage.getItem('categories')
+        if (cachedCategories) {
+          const { data, timestamp } = JSON.parse(cachedCategories)
+          const isExpired = Date.now() - timestamp > 86400000 // 1 day in milliseconds
+          if (!isExpired) {
+            setCategories(data)
+            console.log('Loaded categories from localStorage')
+            return
+          }
+        }
+
+        // Fetch categories from API
         const data = await getPopularCategories()
-        console.log('Fetched Categories Data:', data)
-        const popularCategories = data.results
-          .filter((tag) => tag.type === 'meal')
-          .map((tag) => ({ name: tag.display_name }))
-        setCategories(popularCategories)
+        if (data && data.results) {
+          const popularCategories = data.results
+            .filter((tag) => tag.type === 'meal')
+            .map((tag) => ({ name: tag.display_name }))
+
+          // Save categories to localStorage with a timestamp
+          localStorage.setItem(
+            'categories',
+            JSON.stringify({ data: popularCategories, timestamp: Date.now() })
+          )
+          console.log('Saved categories to localStorage')
+          setCategories(popularCategories)
+        }
       } catch (err) {
         console.error('Failed to fetch categories:', err)
         setError('Failed to fetch categories.')
