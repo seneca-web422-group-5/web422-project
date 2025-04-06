@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { getAutoCompleteSuggestions } from '../lib/api'
 import debounce from 'lodash/debounce'
 
@@ -19,8 +20,13 @@ const debouncedFetchSuggestions = debounce(async (value, setSuggestions) => {
 const SearchBar = () => {
   const [query, setQuery] = useState('')
   const [suggestions, setSuggestions] = useState([])
+  const location = useLocation()
 
-  // Memoize the function to avoid recreating it on every render
+  // Reset query when the component is mounted
+  useEffect(() => {
+    setQuery('')
+  }, [location])
+
   const fetchSuggestions = useCallback((value) => {
     debouncedFetchSuggestions(value, setSuggestions)
   }, [])
