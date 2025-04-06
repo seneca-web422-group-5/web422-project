@@ -23,7 +23,7 @@ const RecommendByUs = ({ recommendations = [] }) => {
 
   return (
     <div className="recommend-container">
-      <h2 className="recommend-title">Recommend by Us</h2>
+      <h2 className="mb-4">Recommend by Us</h2>
       <div className="recommend-list">
         {recommendations.map((item) => (
           <div key={item.id} className="recommend-card">

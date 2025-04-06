@@ -149,11 +149,9 @@ const Homepage = () => {
 
   return (
     <div>
-      <RecommendByUs recommendations={recommendations} />
-      <PopularCategory categories={categories} />
       {randomRecipe && (
         <div
-          className="random-recipe bg-light p-4 mb-4 d-flex flex-column flex-md-row align-items-center"
+          className="random-recipe bg-light p-4 mb-4 mt-4 d-flex flex-column flex-md-row align-items-center"
           onClick={handleRecipeClick}
           style={{ cursor: 'pointer' }}
         >
@@ -172,7 +170,9 @@ const Homepage = () => {
           </div>
         </div>
       )}
+      <PopularCategory categories={categories} />
       <JoinUs />
+      <RecommendByUs recommendations={recommendations} />
     </div>
   )
 }
