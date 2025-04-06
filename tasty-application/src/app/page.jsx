@@ -25,7 +25,7 @@ const Homepage = () => {
 
   const fetchLatestRecipes = async (append = false) => {
     try {
-      const data = await getLatestRecipes(from, 20, 'under_30_minutes') // Fetch 20 recipes per page
+      const data = await getLatestRecipes(from, 10, 'under_30_minutes') // Fetch 20 recipes per page
       console.log('API Response:', data)
 
       if (data && data.results) {
@@ -182,13 +182,18 @@ const Homepage = () => {
       }
     }
 
-    const fetchData = async () => {
+    const fetchCriticalData = async () => {
       setLoading(true)
-      await Promise.all([fetchRandomRecipe(), fetchRecommendations(), fetchCategories(), fetchLatestRecipes()])
+      await Promise.all([fetchRandomRecipe(), fetchLatestRecipes()])
       setLoading(false)
     }
-
-    fetchData()
+  
+    const fetchNonCriticalData = async () => {
+      await Promise.all([fetchRecommendations(), fetchCategories()])
+    }
+  
+    fetchCriticalData()
+    fetchNonCriticalData()
   }, [])
 
   if (loading) {
