@@ -1,19 +1,26 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './RecommendByUs.css'
 
 const RecommendByUs = ({ recommendations = [] }) => {
   const navigate = useNavigate()
+  const [selectedRecipe, setSelectedRecipe] = useState(null)
+  const [showModal, setShowModal] = useState(false)
+
   const handleRecipeClick = (id) => {
     if (id) {
       navigate(`/recipe/${id}`)
     }
   }
 
-  const handleMoreDetailsClick = (id) => {
-    if (id) {
-      alert(`More details about recipe ID: ${id}`)
-    }
+  const handleMoreDetailsClick = (recipe) => {
+    console.log('More details clicked for recipe:', recipe)
+    setSelectedRecipe(recipe)
+    setShowModal(true)
+  }
+  const closeModal = () => {
+    setShowModal(false)
+    setSelectedRecipe(null)
   }
 
   if (!recommendations.length) {
@@ -61,7 +68,7 @@ const RecommendByUs = ({ recommendations = [] }) => {
               <p className="recommend-card-no-rating">No Ratings</p>
             )}
             {/* recipe name */}
-            <h3 className="recommend-card-title">{item.name}</h3>
+            <h3 className="recommend-card-title" onClick={() => handleRecipeClick(item.id)} style={{ cursor: 'pointer' }}>{item.name}</h3>
             {/* author */}
             <p className="recommend-card-author">by {item.author}</p>
             {/* tags */}
@@ -79,7 +86,7 @@ const RecommendByUs = ({ recommendations = [] }) => {
             {/* info icon */}
             <div
               className="recommend-card-info-icon d-flex justify-content-end"
-              onClick={() => handleMoreDetailsClick(item.id)}
+              onClick={() => handleMoreDetailsClick(item)}
               style={{ cursor: 'pointer', marginTop: '10px', textAlign: 'center' }}
             >
               <i className="bi bi-info-circle" style={{ fontSize: '20px', color: '#007bff' }}></i>
@@ -87,6 +94,105 @@ const RecommendByUs = ({ recommendations = [] }) => {
           </div>
         ))}
       </div>
+
+      {/* Bootstrap Modal */}
+      {showModal && selectedRecipe && (
+        <div className="modal show d-block" tabIndex="-1" role="dialog">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">{selectedRecipe.name}</h5>
+                <button type="button" className="close" onClick={closeModal} aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div className="modal-body">
+                {/* Thumbnail */}
+                {selectedRecipe.thumbnail_url && (
+                  <img
+                    src={selectedRecipe.thumbnail_url}
+                    alt={selectedRecipe.name}
+                    className="img-fluid mb-3"
+                    style={{ borderRadius: '8px' }}
+                  />
+                )}
+
+                {/* Description */}
+                {selectedRecipe.description && (
+                  <p>
+                    <strong>Description:</strong>
+                    <span
+                      dangerouslySetInnerHTML={{ __html: selectedRecipe.description }}
+                    ></span>
+                  </p>
+                )}
+
+                {/* Author */}
+                {selectedRecipe.author && (
+                  <p>
+                    <strong>Author:</strong> {selectedRecipe.author}
+                  </p>
+                )}
+
+                {/* Prep Time */}
+                {selectedRecipe.prep_time_minutes && (
+                  <p>
+                    <strong>Prep Time:</strong> {selectedRecipe.prep_time_minutes} minutes
+                  </p>
+                )}
+
+                {/* Cook Time */}
+                {selectedRecipe.cook_time_minutes && (
+                  <p>
+                    <strong>Cook Time:</strong> {selectedRecipe.cook_time_minutes} minutes
+                  </p>
+                )}
+
+                {/* Total Time */}
+                {selectedRecipe.total_time_minutes && (
+                  <p>
+                    <strong>Total Time:</strong> {selectedRecipe.total_time_minutes} minutes
+                  </p>
+                )}
+
+                {/* Servings */}
+                {selectedRecipe.servings && (
+                  <p>
+                    <strong>Servings:</strong> {selectedRecipe.servings}
+                  </p>
+                )}
+
+                {/* Nutrition */}
+                {selectedRecipe.nutrition && (
+                  <p>
+                    <strong>Nutrition:</strong> {Object.entries(selectedRecipe.nutrition).map(([key, value]) => (
+                      <span key={key}>
+                        {key}: {value} &nbsp;
+                      </span>
+                    ))}
+                  </p>
+                )}
+
+                {/* Video */}
+                {selectedRecipe.video_url && (
+                  <div className="mt-3">
+                    <strong>Video:</strong>
+                    <video controls style={{ width: '100%', borderRadius: '8px' }}>
+                      <source src={selectedRecipe.video_url} type="application/x-mpegURL" />
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                )}
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={closeModal}>
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
