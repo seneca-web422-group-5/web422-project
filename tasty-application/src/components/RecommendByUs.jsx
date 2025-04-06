@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import './RecommendByUs.css'
+import '../styles/RecommendByUs.css'
 
 const RecommendByUs = ({ recommendations = [] }) => {
   const navigate = useNavigate()

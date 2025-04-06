@@ -8,7 +8,7 @@ import Favorites from './favorites/page'
 import Login from './auth/login'
 import Signup from './auth/signup'
 import RecipePage from './receipt/[id]/page'
-import SearchResults from './SearchResults/page'
+import SearchResults from '../components/SearchResults'
 
 const Layout = () => {
   return (
