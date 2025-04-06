@@ -13,6 +13,8 @@ const Homepage = () => {
   const [randomRecipe, setRandomRecipe] = useState(null)
   const [recommendations, setRecommendations] = useState([])
   const [latestRecipes, setLatestRecipes] = useState([])
+  const [from, setFrom] = useState(0)
+  const [hasMore, setHasMore] = useState(true)
   const navigate = useNavigate()
 
   const handleRecipeClick = () => {
@@ -21,6 +23,41 @@ const Homepage = () => {
     }
   }
 
+  const fetchLatestRecipes = async (append = false) => {
+    try {
+      const data = await getLatestRecipes(from, 20, 'under_30_minutes') // Fetch 20 recipes per page
+      console.log('API Response:', data)
+
+      if (data && data.results) {
+        const newRecipes = data.results
+          .filter((recipe) => recipe.id !== undefined && recipe.created_at !== null) // Filter valid recipes
+          .map((recipe) => ({
+            id: recipe.id,
+            name: recipe.name,
+            thumbnail_url: recipe.thumbnail_url,
+            created_at: recipe.created_at
+          }))
+
+        console.log('New Recipes:', newRecipes)
+
+        // Append or replace recipes
+        setLatestRecipes((prevRecipes) => (append ? [...prevRecipes, ...newRecipes] : newRecipes))
+
+        // Update pagination state
+        setFrom((prevFrom) => prevFrom + 20) // Increment `from` by 20
+        setHasMore(newRecipes.length > 0) // If no new recipes, stop loading more
+      }
+    } catch (err) {
+      console.error('Error fetching latest recipes:', err)
+      setError('Failed to fetch latest recipes.')
+    }
+  }
+
+  const handleLoadMore = () => {
+    fetchLatestRecipes(true) // Fetch more recipes and append
+  }
+
+  // MARKME: Entry point for the component
   useEffect(() => {
     const fetchRandomRecipe = async () => {
       // Check if randomRecipe is already in localStorage
@@ -113,34 +150,6 @@ const Homepage = () => {
       }
     }
 
-    const fetchLatestRecipes = async () => {
-      try {
-        const data = await getLatestRecipes(0, 100, 'under_30_minutes') // Fetch 100 recipes
-        console.log('API Response:', data)
-    
-        if (data && data.results) {
-          const allRecipes = data.results
-            .filter((recipe) => recipe.id !== undefined && recipe.created_at !== null) // Filter valid recipes
-            .map((recipe) => ({
-              id: recipe.id,
-              name: recipe.name,
-              thumbnail_url: recipe.thumbnail_url,
-              created_at: recipe.created_at
-            }))
-    
-          console.log('Filtered Recipes:', allRecipes)
-    
-          // Sort recipes by created_at in descending order
-          const sortedRecipes = allRecipes.sort((a, b) => b.created_at - a.created_at)
-    
-          setLatestRecipes(sortedRecipes)
-        }
-      } catch (err) {
-        console.error('Error fetching latest recipes:', err)
-        setError('Failed to fetch latest recipes.')
-      }
-    }
-
     const fetchCategories = async () => {
       try {
         const cachedCategories = localStorage.getItem('categories')
@@ -217,6 +226,13 @@ const Homepage = () => {
       <JoinUs />
       <RecommendByUs recommendations={recommendations} />
       <LatestRecipes recipes={latestRecipes} />
+      {hasMore && (
+        <div className="text-center mt-4">
+          <button className="btn btn-primary" onClick={handleLoadMore}>
+            Load More
+          </button>
+        </div>
+      )}
     </div>
   )
 }
