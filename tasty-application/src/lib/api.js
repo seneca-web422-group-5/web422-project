@@ -3,7 +3,7 @@
 // https://publicapi.dev/tasty-api
 
 const BASE_URL = 'https://tasty.p.rapidapi.com'
-const API_KEY = '527600ec2dmsh22bea86f9657351p139636jsne4688cd85202' // Store securely (e.g., env variables)
+const API_KEY = process.env.REACT_APP_API_KEY // Store securely (e.g., env variables)
 
 const fetchFromTastyAPI = async (endpoint, params = {}) => {
   const url = new URL(`${BASE_URL}/${endpoint}`)
