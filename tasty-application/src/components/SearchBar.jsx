@@ -1,31 +1,39 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { getAutoCompleteSuggestions } from '../lib/api'
+import debounce from 'lodash/debounce'
 
 const SearchBar = () => {
   const [query, setQuery] = useState('')
   const [suggestions, setSuggestions] = useState([])
 
-  const handleInputChange = async (e) => {
+  // Debounced function to fetch suggestions
+  const fetchSuggestions = useCallback(
+    debounce(async (value) => {
+      if (value.length > 2) {
+        try {
+          const data = await getAutoCompleteSuggestions(value)
+          console.log('Auto-complete Suggestions:', data)
+          setSuggestions(data?.results || [])
+        } catch (err) {
+          console.error('Error fetching auto-complete suggestions:', err)
+        }
+      } else {
+        setSuggestions([])
+      }
+    }, 300), // 300ms debounce delay
+    []
+  )
+
+  const handleInputChange = (e) => {
     const value = e.target.value
     setQuery(value)
-
-    if (value.length > 2) { // Fetch suggestions only if the input length is greater than 2
-      try {
-        const data = await getAutoCompleteSuggestions(value)
-        console.log('Auto-complete Suggestions:', data)
-        setSuggestions(data?.results || [])
-      } catch (err) {
-        console.error('Error fetching auto-complete suggestions:', err)
-      }
-    } else {
-      setSuggestions([]) // Clear suggestions if input is too short
-    }
+    fetchSuggestions(value)
   }
 
   const handleSuggestionClick = (suggestion) => {
     console.log('Selected Suggestion:', suggestion)
-    setQuery(suggestion)
-    setSuggestions([]) // Clear suggestions after selection
+    setQuery(suggestion.display)
+    setSuggestions([])
   }
 
   return (
