@@ -6,6 +6,7 @@ const RecommendByUs = ({ recommendations = [] }) => {
   const navigate = useNavigate()
   const [selectedRecipe, setSelectedRecipe] = useState(null)
   const [showModal, setShowModal] = useState(false)
+  const [page, setPage] = useState(1) // track the current page in the modal
 
   const handleRecipeClick = (id) => {
     if (id) {
@@ -14,10 +15,11 @@ const RecommendByUs = ({ recommendations = [] }) => {
   }
 
   const handleMoreDetailsClick = (recipe) => {
-    console.log('More details clicked for recipe:', recipe)
     setSelectedRecipe(recipe)
     setShowModal(true)
+    setPage(1)
   }
+
   const closeModal = () => {
     setShowModal(false)
     setSelectedRecipe(null)
@@ -100,14 +102,16 @@ const RecommendByUs = ({ recommendations = [] }) => {
         <div className="modal show d-block" tabIndex="-1" role="dialog">
           <div className="modal-dialog" role="document">
             <div className="modal-content">
-              <div className="modal-header">
+              <div className="modal-header d-flex justify-content-between align-items-center">
                 <h5 className="modal-title">{selectedRecipe.name}</h5>
-                <button type="button" className="close" onClick={closeModal} aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={closeModal}
+                  aria-label="Close"
+                ></button>
               </div>
               <div className="modal-body">
-                {/* Thumbnail */}
                 {selectedRecipe.thumbnail_url && (
                   <img
                     src={selectedRecipe.thumbnail_url}
@@ -116,75 +120,85 @@ const RecommendByUs = ({ recommendations = [] }) => {
                     style={{ borderRadius: '8px' }}
                   />
                 )}
-
-                {/* Description */}
-                {selectedRecipe.description && (
-                  <p>
-                    <strong>Description:</strong>
-                    <span
-                      dangerouslySetInnerHTML={{ __html: selectedRecipe.description }}
-                    ></span>
-                  </p>
+                {page === 1 && (
+                  <>
+                    {/* Page 1: Basic Details */}
+                    {selectedRecipe.description && (
+                      <p>
+                        <strong>Description:</strong>
+                        <span
+                          dangerouslySetInnerHTML={{ __html: selectedRecipe.description }}
+                        ></span>
+                      </p>
+                    )}
+                    {selectedRecipe.author && (
+                      <p>
+                        <strong>Author:</strong> {selectedRecipe.author}
+                      </p>
+                    )}
+                  </>
                 )}
 
-                {/* Author */}
-                {selectedRecipe.author && (
-                  <p>
-                    <strong>Author:</strong> {selectedRecipe.author}
-                  </p>
-                )}
-
-                {/* Prep Time */}
-                {selectedRecipe.prep_time_minutes && (
-                  <p>
-                    <strong>Prep Time:</strong> {selectedRecipe.prep_time_minutes} minutes
-                  </p>
-                )}
-
-                {/* Cook Time */}
-                {selectedRecipe.cook_time_minutes && (
-                  <p>
-                    <strong>Cook Time:</strong> {selectedRecipe.cook_time_minutes} minutes
-                  </p>
-                )}
-
-                {/* Total Time */}
-                {selectedRecipe.total_time_minutes && (
-                  <p>
-                    <strong>Total Time:</strong> {selectedRecipe.total_time_minutes} minutes
-                  </p>
-                )}
-
-                {/* Servings */}
-                {selectedRecipe.servings && (
-                  <p>
-                    <strong>Servings:</strong> {selectedRecipe.servings}
-                  </p>
-                )}
-
-                {/* Nutrition */}
-                {selectedRecipe.nutrition && (
-                  <p>
-                    <strong>Nutrition:</strong> {Object.entries(selectedRecipe.nutrition).map(([key, value]) => (
-                      <span key={key}>
-                        {key}: {value} &nbsp;
-                      </span>
-                    ))}
-                  </p>
-                )}
-
-                {/* Video */}
-                {selectedRecipe.video_url && (
-                  <div className="mt-3">
-                    <strong>Video:</strong>
-                    <video controls style={{ width: '100%', borderRadius: '8px' }}>
-                      <source src={selectedRecipe.video_url} type="application/x-mpegURL" />
-                      Your browser does not support the video tag.
-                    </video>
-                  </div>
+                {page === 2 && (
+                  <>
+                    {/* Page 2: Additional Details */}
+                    {selectedRecipe.prep_time_minutes && (
+                      <p>
+                        <strong>Prep Time:</strong> {selectedRecipe.prep_time_minutes} minutes
+                      </p>
+                    )}
+                    {selectedRecipe.cook_time_minutes && (
+                      <p>
+                        <strong>Cook Time:</strong> {selectedRecipe.cook_time_minutes} minutes
+                      </p>
+                    )}
+                    {selectedRecipe.total_time_minutes && (
+                      <p>
+                        <strong>Total Time:</strong> {selectedRecipe.total_time_minutes} minutes
+                      </p>
+                    )}
+                    {selectedRecipe.servings && (
+                      <p>
+                        <strong>Servings:</strong> {selectedRecipe.servings}
+                      </p>
+                    )}
+                    {selectedRecipe.nutrition && (
+                      <div>
+                        <strong>Nutrition:</strong>
+                        <ul>
+                          {Object.entries(selectedRecipe.nutrition)
+                            .filter(([key]) => key !== 'updated_at') // Exclude the updated_at field
+                            .map(([key, value]) => (
+                              <li key={key}>
+                                {key}: {value}
+                              </li>
+                            ))}
+                        </ul>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
               <div className="modal-footer">
+                {/* Navigation Buttons */}
+                {page > 1 && (
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => setPage(page - 1)}
+                  >
+                    Previous
+                  </button>
+                )}
+                {page < 2 && (
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => setPage(page + 1)}
+                  >
+                    Next
+                  </button>
+                )}
                 <button type="button" className="btn btn-secondary" onClick={closeModal}>
                   Close
                 </button>
