@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { getAutoCompleteSuggestions } from '../lib/api'
 import debounce from 'lodash/debounce'
 
@@ -21,6 +21,7 @@ const SearchBar = () => {
   const [query, setQuery] = useState('')
   const [suggestions, setSuggestions] = useState([])
   const location = useLocation()
+  const navigate = useNavigate()
 
   // Reset query when the component is mounted
   useEffect(() => {
@@ -41,6 +42,7 @@ const SearchBar = () => {
     console.log('Selected Suggestion:', suggestion)
     setQuery(suggestion.display)
     setSuggestions([])
+    navigate(`/search-results?query=${encodeURIComponent(suggestion.display)}`)
   }
 
   return (

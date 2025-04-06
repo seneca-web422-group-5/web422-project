@@ -25,12 +25,12 @@ const Homepage = () => {
 
   const fetchLatestRecipes = async (append = false) => {
     try {
-      const data = await getLatestRecipes(from, 10, 'under_30_minutes') // Fetch 20 recipes per page
+      const data = await getLatestRecipes(from, 10, 'under_30_minutes')
       console.log('API Response:', data)
 
       if (data && data.results) {
         const newRecipes = data.results
-          .filter((recipe) => recipe.id !== undefined && recipe.created_at !== null) // Filter valid recipes
+          .filter((recipe) => recipe.id !== undefined && recipe.created_at !== null)
           .map((recipe) => ({
             id: recipe.id,
             name: recipe.name,
