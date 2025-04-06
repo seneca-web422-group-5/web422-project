@@ -39,6 +39,8 @@ export const getPopularCategories = async () => {
 }
 export const getFeeds = (size = 1, timezone = '+0700', from = 0) =>
   fetchFromTastyAPI('feeds/list', { size, timezone, from })
+export const getLatestRecipes = (from = 0, size = 100, tags = 'under_30_minutes') =>
+  fetchFromTastyAPI('recipes/list', { from, size, tags })
 
 // Assign the object to a variable
 const api = {
@@ -46,7 +48,8 @@ const api = {
   searchRecipes,
   getAutoComplete,
   getPopularCategories,
-  getFeeds
+  getFeeds,
+  getLatestRecipes
 }
 
 // Export the variable as the default export

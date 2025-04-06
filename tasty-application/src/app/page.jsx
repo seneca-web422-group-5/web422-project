@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getFeeds, getPopularCategories } from '../lib/api'
+import { getFeeds, getPopularCategories, getLatestRecipes } from '../lib/api'
 import JoinUs from '../components/JoinUs'
 import PopularCategory from '../components/PopularCategory'
 import RecommendByUs from '../components/RecommendByUs'
@@ -115,17 +115,17 @@ const Homepage = () => {
 
     const fetchLatestRecipes = async () => {
       try {
-        const data = await getFeeds(100, '+0700', 0)
+        const data = await getLatestRecipes(0, 100, 'under_30_minutes') // Fetch 100 recipes
         console.log('API Response:', data)
     
         if (data && data.results) {
           const allRecipes = data.results
-            .filter((result) => result.type === 'item' && result.item?.id !== undefined && result.item?.created_at !== null)
-            .map((result) => ({
-              id: result.item?.id,
-              name: result.item?.name,
-              thumbnail_url: result.item?.thumbnail_url,
-              created_at: result.item?.created_at
+            .filter((recipe) => recipe.id !== undefined && recipe.created_at !== null) // Filter valid recipes
+            .map((recipe) => ({
+              id: recipe.id,
+              name: recipe.name,
+              thumbnail_url: recipe.thumbnail_url,
+              created_at: recipe.created_at
             }))
     
           console.log('Filtered Recipes:', allRecipes)
