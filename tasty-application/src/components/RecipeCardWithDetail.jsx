@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
+import { useAtom } from 'jotai'
 import { useNavigate } from 'react-router-dom'
+import { recentlyViewedAtom } from '../atoms/recentlyViewedAtom'
 import { navigateToRecipe } from '../utils/helpers'
 import RecipeModal from './RecipeModal'
 import '../styles/RecipeCardWithDetail.css'
 
 const RecipeCardWithDetail = ({ recipe }) => {
     const navigate = useNavigate()
+    const [recentlyViewed, setRecentlyViewed] = useAtom(recentlyViewedAtom)
     const [selectedRecipe, setSelectedRecipe] = useState(null)
     const [showModal, setShowModal] = useState(false)
     const [page, setPage] = useState(1)
@@ -22,9 +25,17 @@ const RecipeCardWithDetail = ({ recipe }) => {
         setSelectedRecipe(null)
     }
 
+    const handleCardClick = () => {
+        setRecentlyViewed((prev) => {
+            const updatedViewed = [recipe, ...prev.filter((item) => item.id !== recipe.id)].slice(0, 5)
+            return updatedViewed
+        })
+        navigateToRecipe(navigate, recipe.id)
+    }
+
     return (
         <>
-        <div className="recipe-card">
+         <div className="recipe-card" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
             {/* Recipe Image */}
             <div className="recipe-card-image" onClick={() => navigateToRecipe(navigate, recipe.id)} style={{ cursor: 'pointer' }}>
                 {recipe.thumbnail_url ? (
@@ -45,7 +56,10 @@ const RecipeCardWithDetail = ({ recipe }) => {
             {/* Info Icon */}
             <div
                 className="recipe-card-info-icon"
-                onClick={() => handleMoreDetailsClick(recipe)}
+                onClick={(e) => {
+                    e.stopPropagation()
+                    handleMoreDetailsClick(recipe)
+                }}
                 style={{ cursor: 'pointer' }}
             >
                 <i className="bi bi-info-circle" style={{ fontSize: '20px', color: '#007bff' }}></i>
