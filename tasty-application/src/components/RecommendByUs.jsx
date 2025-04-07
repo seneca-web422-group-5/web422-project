@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { navigateToRecipe } from '../utils/helpers'
+import { navigateToRecipe, renderStars } from '../utils/helpers'
 import RecipeModal from './RecipeModal'
 import '../styles/RecommendByUs.css'
 
@@ -24,21 +24,6 @@ const RecommendByUs = ({ recommendations = [] }) => {
 
   if (!recommendations.length) {
     return <div>No recommendations available.</div>
-  }
-
-  // Helper function to render star ratings
-  const renderStars = (score) => {
-    const maxStars = 5
-    const filledStars = Math.round(score * maxStars) // Convert score (0-1) to stars (0-5)
-    return (
-      <div className="recommend-card-stars d-flex justify-content-center mb-0">
-        {[...Array(maxStars)].map((_, index) => (
-          <span key={index} className={index < filledStars ? 'star filled' : 'star'}>
-            ★
-          </span>
-        ))}
-      </div>
-    )
   }
 
   return (
