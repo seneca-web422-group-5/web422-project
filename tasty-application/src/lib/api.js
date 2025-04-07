@@ -39,6 +39,8 @@ export const getPopularCategories = async () => {  return fetchFromTastyAPI('tag
 export const getFeeds = (size = 1, timezone = '+0700', from = 0) =>  fetchFromTastyAPI('feeds/list', { size, timezone, from })
 export const getLatestRecipes = (from = 0, size = 100, tags = 'under_30_minutes') =>  fetchFromTastyAPI('recipes/list', { from, size, tags })
 export const getFullDetail = (id) => fetchFromTastyAPI(`recipes/get-more-info`, { id });
+export const getSimilarRecipes = (recipeId) =>
+  fetchFromTastyAPI('recipes/list-similarities', { recipe_id: recipeId })
 
 
 // Assign the object to a variable
@@ -50,9 +52,9 @@ const api = {
     getFeeds,
     getLatestRecipes,
     getTags,
-    getFullDetail
+    getFullDetail,
+    getSimilarRecipes
   };
   
-  // Export the variable as the default export
-  export default api;
+
 
