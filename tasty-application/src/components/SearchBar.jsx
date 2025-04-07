@@ -42,7 +42,6 @@ const SearchBar = () => {
 
   const handleSuggestionClick = (suggestion) => {
     const selectedQuery = suggestion.display
-    console.log('Selected Suggestion:', selectedQuery)
 
     // Update recent searches
     setRecentSearches((prev) => {
