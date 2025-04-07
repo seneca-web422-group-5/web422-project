@@ -32,9 +32,9 @@ const RecipeCardWithDetail = ({ recipe }) => {
 
     return (
         <>
-         <div className="recipe-card" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
+         <div className="recipe-card">
             {/* Recipe Image */}
-            <div className="recipe-card-image" onClick={() => navigateToRecipe(navigate, recipe.id)} style={{ cursor: 'pointer' }}>
+            <div className="recipe-card-image" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
                 {recipe.thumbnail_url ? (
                     <img src={recipe.thumbnail_url} alt={recipe.name} />
                 ) : (
@@ -43,7 +43,7 @@ const RecipeCardWithDetail = ({ recipe }) => {
             </div>
 
             {/* Recipe Name */}
-            <h3 className="recipe-card-title"  onClick={() => navigateToRecipe(recipe.id)} style={{ cursor: 'pointer' }}>{recipe.name}</h3>
+            <h3 className="recipe-card-title"  onClick={handleCardClick} style={{ cursor: 'pointer' }}>{recipe.name}</h3>
 
             {/* Total Time */}
             <p className="recipe-card-time">
