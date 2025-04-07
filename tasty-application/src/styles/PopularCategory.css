@@ -5,10 +5,12 @@
   
   .category-list {
     display: flex;
+    justify-content: center;
     overflow-x: auto;
     gap: 20px;
     padding-bottom: 10px;
     scrollbar-width: thin;
+    flex-wrap: nowrap;
   }
   
   .category-list::-webkit-scrollbar {

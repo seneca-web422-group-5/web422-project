@@ -3,7 +3,7 @@
 // https://publicapi.dev/tasty-api
 
 const BASE_URL = 'https://tasty.p.rapidapi.com'
-const API_KEY = '30f4561ac7msh7c130f6beaab83bp1436c5jsn564fb26bc065' // Store securely (e.g., env variables)
+const API_KEY = process.env.REACT_APP_API_KEY // Store securely (e.g., env variables)
 
 const fetchFromTastyAPI = async (endpoint, params = {}) => {
   const url = new URL(`${BASE_URL}/${endpoint}`)
@@ -32,21 +32,27 @@ const fetchFromTastyAPI = async (endpoint, params = {}) => {
 // Export functions
 export const getRecipeDetails = (id) => fetchFromTastyAPI('recipes/detail', { id })
 export const searchRecipes = (query) => fetchFromTastyAPI('recipes/list', { q: query })
-export const getAutoComplete = (query) =>
+export const getAutoCompleteSuggestions = (query) =>
   fetchFromTastyAPI('recipes/auto-complete', { prefix: query })
 export const getPopularCategories = async () => {
   return fetchFromTastyAPI('tags/list')
 }
 export const getFeeds = (size = 1, timezone = '+0700', from = 0) =>
   fetchFromTastyAPI('feeds/list', { size, timezone, from })
+export const getLatestRecipes = (from = 0, size = 100, tags = 'under_30_minutes') =>
+  fetchFromTastyAPI('recipes/list', { from, size, tags })
+export const getSimilarRecipes = (recipeId) =>
+  fetchFromTastyAPI('recipes/list-similarities', { recipe_id: recipeId })
 
 // Assign the object to a variable
 const api = {
   getRecipeDetails,
   searchRecipes,
-  getAutoComplete,
+  getAutoCompleteSuggestions,
   getPopularCategories,
-  getFeeds
+  getFeeds,
+  getLatestRecipes,
+  getSimilarRecipes
 }
 
 // Export the variable as the default export

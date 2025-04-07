@@ -1,5 +1,5 @@
 import React from 'react'
-import './PopularCategory.css'
+import '../styles/PopularCategory.css'
 
 // Map category names to local image paths
 const categoryImages = {
@@ -13,7 +13,7 @@ const PopularCategory = ({ categories }) => {
   return (
     <div className="popular-category-container">
       <h2 className="mb-4">Popular Categories</h2>
-      <div className="category-list d-flex justify-content-center">
+      <div className="category-list">
         {categories.map((category, index) => (
           <div key={category.name} className="category-item ms-2">
             {/* Check if the category has an image */}
