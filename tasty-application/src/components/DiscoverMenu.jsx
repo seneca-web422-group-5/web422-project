@@ -48,7 +48,7 @@ const DiscoverMenu = ({ recipeId }) => {
 
     const interval = setInterval(() => {
       setCurrentPage((prevPage) => (prevPage === totalPages ? 1 : prevPage + 1))
-    }, 3000) // Change page every 5 seconds
+    }, 5000) // Change page every 5 seconds
 
     return () => clearInterval(interval)
   }, [similarRecipes, recipesPerPage])
