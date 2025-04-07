@@ -15,10 +15,17 @@ import React from 'react'
     )
   }
 
+const addToRecentlyViewed = (setRecentlyViewed, recipe) => {
+    setRecentlyViewed((prev) => {
+      const updatedViewed = [recipe, ...prev.filter((item) => item.id !== recipe.id)].slice(0, 5)
+      return updatedViewed
+    })
+  }
+
 const navigateToRecipe = (navigate, id) => {
     if (id) {
       navigate(`/recipe/${id}`)
     }
   }
 
-export { renderStars, navigateToRecipe }
+export { renderStars, addToRecentlyViewed, navigateToRecipe }
