@@ -27,7 +27,6 @@ const Homepage = () => {
   const fetchLatestRecipes = async (append = false) => {
     try {
       const data = await getLatestRecipes(from, 10, 'under_30_minutes')
-      console.log('API Response:', data)
 
       if (data && data.results) {
         const newRecipes = data.results
@@ -38,8 +37,6 @@ const Homepage = () => {
             thumbnail_url: recipe.thumbnail_url,
             created_at: recipe.created_at
           }))
-
-        console.log('New Recipes:', newRecipes)
 
         // Append or replace recipes
         setLatestRecipes((prevRecipes) => (append ? [...prevRecipes, ...newRecipes] : newRecipes))
@@ -69,7 +66,6 @@ const Homepage = () => {
           const isExpired = Date.now() - timestamp > 86400000 // 1 day in milliseconds
           if (!isExpired) {
             setRandomRecipe(data)
-            console.log('Loaded randomRecipe from localStorage')
             return
           }
         } catch (e) {
@@ -91,7 +87,6 @@ const Homepage = () => {
               'randomRecipe',
               JSON.stringify({ data: newRandomRecipe, timestamp: Date.now() })
             )
-            console.log('Saved randomRecipe to localStorage')
           } else {
             console.warn('No recipe items found in the feed.')
           }
@@ -110,7 +105,6 @@ const Homepage = () => {
           const isExpired = Date.now() - timestamp > 86400000 // 1 day in milliseconds
           if (!isExpired) {
             setRecommendations(data)
-            console.log('Loaded recommendations from localStorage')
             return
           }
         }
@@ -142,7 +136,6 @@ const Homepage = () => {
             'recommendations',
             JSON.stringify({ data: mappedRecommendations, timestamp: Date.now() })
           )
-          console.log('Saved recommendations to localStorage')
           setRecommendations(mappedRecommendations)
         }
       } catch (err) {
@@ -159,7 +152,6 @@ const Homepage = () => {
           const isExpired = Date.now() - timestamp > 86400000 // 1 day in milliseconds
           if (!isExpired) {
             setCategories(data)
-            console.log('Loaded categories from localStorage')
             return
           }
         }
@@ -174,7 +166,6 @@ const Homepage = () => {
             'categories',
             JSON.stringify({ data: popularCategories, timestamp: Date.now() })
           )
-          console.log('Saved categories to localStorage')
           setCategories(popularCategories)
         }
       } catch (err) {
