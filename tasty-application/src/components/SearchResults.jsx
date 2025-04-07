@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { searchRecipes } from '../lib/api'
+import RecipeCardWithDetail from './RecipeCardWithDetail'
 import '../styles/SearchResults.css'
 
 const SearchResults = () => {
@@ -32,7 +33,6 @@ const SearchResults = () => {
     }
   }, [query])
 
-  // Calculate the paginated results
   const indexOfLastResult = currentPage * resultsPerPage
   const indexOfFirstResult = indexOfLastResult - resultsPerPage
   const currentResults = results.slice(indexOfFirstResult, indexOfLastResult)
@@ -55,16 +55,11 @@ const SearchResults = () => {
     <div>
       <h1>Search Results for "{query}"</h1>
       <div className="results-grid">
-        {currentResults.map((result) => (
-          <div key={result.id} className="card">
-            <img src={result.thumbnail_url} alt={result.name} className="card-img" />
-            <h2 className="card-title">{result.name}</h2>
-            <p className="card-time">{result.total_time_minutes || 'N/A'} mins</p>
-          </div>
+        {currentResults.map((recipe) => (
+          <RecipeCardWithDetail key={recipe.id} recipe={recipe} />
         ))}
       </div>
 
-      {/* Pagination Controls */}
       <div className="pagination">
         {[...Array(totalPages)].map((_, index) => (
           <button

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import './LatestRecipes.css'
+import '../styles/LatestRecipes.css'
 
 const LatestRecipes = ({ recipes }) => {
   const navigate = useNavigate()
