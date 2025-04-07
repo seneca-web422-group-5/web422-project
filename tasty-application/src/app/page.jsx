@@ -5,6 +5,7 @@ import JoinUs from '../components/JoinUs'
 import PopularCategory from '../components/PopularCategory'
 import RecommendByUs from '../components/RecommendByUs'
 import LatestRecipes from '../components/LatestRecipes'
+import DiscoverMenu from '../components/DiscoverMenu'
 
 const Homepage = () => {
   const [loading, setLoading] = useState(true)
@@ -227,6 +228,7 @@ const Homepage = () => {
           </div>
         </div>
       )}
+      <DiscoverMenu recipeId={randomRecipe?.id} />
       <PopularCategory categories={categories} />
       <JoinUs />
       <RecommendByUs recommendations={recommendations} />
