@@ -16,8 +16,20 @@ const DiscoverMenu = ({ recipeId }) => {
 
       try {
         setLoading(true)
+
+        // Check local storage for cached data
+        const cachedData = localStorage.getItem(`similarRecipes_${recipeId}`)
+        if (cachedData) {
+          setSimilarRecipes(JSON.parse(cachedData))
+          setLoading(false)
+          return
+        }
+
+        // Fetch from API if not in cache
         const data = await getSimilarRecipes(recipeId)
-        setSimilarRecipes(data?.results || [])
+        const results = data?.results || []
+        localStorage.setItem(`similarRecipes_${recipeId}`, JSON.stringify(results))
+        setSimilarRecipes(results)
       } catch (err) {
         console.error('Error fetching similar recipes:', err)
         setError('Failed to fetch similar recipes.')
