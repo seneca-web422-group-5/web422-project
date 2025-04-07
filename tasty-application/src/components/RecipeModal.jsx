@@ -28,19 +28,20 @@ const RecipeModal = ({ selectedRecipe, page, setPage, closeModal }) => {
             {page === 1 && (
               <>
                 {/* Page 1: Basic Details */}
-                {selectedRecipe.description && (
-                  <p>
-                    <strong>Description:</strong>{' '}
+                <p>
+                  <strong>Description:</strong>{' '}
+                  {selectedRecipe.description ? (
                     <span
                       dangerouslySetInnerHTML={{ __html: selectedRecipe.description }}
                     ></span>
-                  </p>
-                )}
-                {selectedRecipe.author && (
-                  <p>
-                    <strong>Author:</strong> {selectedRecipe.author}
-                  </p>
-                )}
+                  ) : (
+                    'No description available.'
+                  )}
+                </p>
+                <p>
+                  <strong>Author:</strong>{' '}
+                  {selectedRecipe.author ? selectedRecipe.author : 'Author information not available.'}
+                </p>
               </>
             )}
 

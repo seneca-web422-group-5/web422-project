@@ -184,12 +184,12 @@ const Homepage = () => {
 
     const fetchCriticalData = async () => {
       setLoading(true)
-      await Promise.all([fetchRandomRecipe(), fetchLatestRecipes()])
+      await Promise.all([fetchRandomRecipe()])
       setLoading(false)
     }
   
     const fetchNonCriticalData = async () => {
-      await Promise.all([fetchRecommendations(), fetchCategories()])
+      await Promise.all([fetchRecommendations(), fetchCategories(), fetchLatestRecipes()])
     }
   
     fetchCriticalData()
