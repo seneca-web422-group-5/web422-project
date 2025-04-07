@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { navigateToRecipe } from '../utils/helpers'
 import RecipeModal from './RecipeModal'
 import '../styles/RecommendByUs.css'
 
@@ -8,12 +9,6 @@ const RecommendByUs = ({ recommendations = [] }) => {
   const [selectedRecipe, setSelectedRecipe] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [page, setPage] = useState(1) // track the current page in the modal
-
-  const handleRecipeClick = (id) => {
-    if (id) {
-      navigate(`/recipe/${id}`)
-    }
-  }
 
   const handleMoreDetailsClick = (recipe) => {
     console.log('More details clicked for recipe:', recipe)
@@ -53,7 +48,7 @@ const RecommendByUs = ({ recommendations = [] }) => {
         {recommendations.map((item) => (
           <div key={item.id} className="recommend-card">
             {/* image */}
-            <div className="recommend-card-image" onClick={() => handleRecipeClick(item.id)} style={{ cursor: 'pointer' }}>
+            <div className="recommend-card-image" onClick={() => navigateToRecipe(navigate, item.id)} style={{ cursor: 'pointer' }}>
               {item.thumbnail_url ? (
                 <img src={item.thumbnail_url} alt={item.name} />
               ) : (
@@ -72,7 +67,7 @@ const RecommendByUs = ({ recommendations = [] }) => {
               <p className="recommend-card-no-rating">No Ratings</p>
             )}
             {/* recipe name */}
-            <h3 className="recommend-card-title" onClick={() => handleRecipeClick(item.id)} style={{ cursor: 'pointer' }}>{item.name}</h3>
+            <h3 className="recommend-card-title" onClick={() => navigateToRecipe(navigate, item.id)} style={{ cursor: 'pointer' }}>{item.name}</h3>
             {/* author */}
             <p className="recommend-card-author">by {item.author}</p>
             {/* tags */}
