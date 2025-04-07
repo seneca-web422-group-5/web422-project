@@ -17,7 +17,7 @@ import React from 'react'
 
 const addToRecentlyViewed = (setRecentlyViewed, recipe) => {
     setRecentlyViewed((prev) => {
-      const updatedViewed = [recipe, ...prev.filter((item) => item.id !== recipe.id)].slice(0, 20)
+      const updatedViewed = [recipe, ...prev.filter((item) => item.id !== recipe.id)].slice(0, 5)
       return updatedViewed
     })
   }
@@ -28,11 +28,4 @@ const navigateToRecipe = (navigate, id) => {
     }
   }
 
-const filterRecipesByTag = (recipes, tagName) => {
-    return recipes.filter((recipe) =>
-      recipe.tags?.some((tag) => tag.name === tagName)
-    );
-  };
-  
-
-export { renderStars, addToRecentlyViewed, navigateToRecipe, filterRecipesByTag }
+export { renderStars, navigateToRecipe }

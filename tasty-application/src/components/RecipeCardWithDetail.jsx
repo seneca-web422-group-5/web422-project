@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useAtom } from 'jotai'
 import { useNavigate } from 'react-router-dom'
 import { recentlyViewedAtom } from '../atoms/recentlyViewedAtom'
-import { navigateToRecipe } from '../utils/helpers'
+import { navigateToRecipe, addToRecentlyViewed } from '../utils/helpers'
 import RecipeModal from './RecipeModal'
 import '../styles/RecipeCardWithDetail.css'
 
@@ -26,10 +26,7 @@ const RecipeCardWithDetail = ({ recipe }) => {
     }
 
     const handleCardClick = () => {
-        setRecentlyViewed((prev) => {
-            const updatedViewed = [recipe, ...prev.filter((item) => item.id !== recipe.id)].slice(0, 5)
-            return updatedViewed
-        })
+        addToRecentlyViewed(setRecentlyViewed, recipe)
         navigateToRecipe(navigate, recipe.id)
     }
 
