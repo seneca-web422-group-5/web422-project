@@ -8,6 +8,7 @@ import Favorites from './favorites/page'
 import Login from './auth/login'
 import Signup from './auth/signup'
 import RecipePage from './receipt/[id]/page'
+import SearchResults from '../components/SearchResults'
 
 const Layout = () => {
   return (
@@ -20,6 +21,7 @@ const Layout = () => {
       <Route path="/auth/login" element={<Login />} />
       <Route path="/auth/signup" element={<Signup />} />
       <Route path="/recipe/:id" element={<RecipePage />} />
+      <Route path="/search-results" element={<SearchResults />} />
     </Routes>
   )
 }

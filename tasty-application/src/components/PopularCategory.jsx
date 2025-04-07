@@ -1,5 +1,5 @@
 import React from 'react'
-import './PopularCategory.css'
+import '../styles/PopularCategory.css'
 
 // Map category names to local image paths
 const categoryImages = {
