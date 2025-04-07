@@ -44,7 +44,7 @@ const Homepage = () => {
         setLatestRecipes((prevRecipes) => (append ? [...prevRecipes, ...newRecipes] : newRecipes))
 
         // Update pagination state
-        setFrom((prevFrom) => prevFrom + 20) // Increment `from` by 20
+        setFrom((prevFrom) => prevFrom + 10) // Increment `from` by 20
         setHasMore(newRecipes.length > 0) // If no new recipes, stop loading more
       }
     } catch (err) {
