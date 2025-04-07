@@ -1,16 +1,19 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAtom } from 'jotai'
+import { navigateToRecipe, addToRecentlyViewed } from '../utils/helpers'
+import { recentlyViewedAtom } from '../atoms/recentlyViewedAtom'
 import '../styles/LatestRecipes.css'
 
 const LatestRecipes = ({ recipes }) => {
   const navigate = useNavigate()
+  const [recentlyViewed, setRecentlyViewed] = useAtom(recentlyViewedAtom)
   // Sort recipes by created_at in descending order
   const sortedRecipes = [...recipes].sort((a, b) => b.created_at - a.created_at)
-
-  const handleRecipeClick = (id) => {
-    if (id) {
-      navigate(`/recipe/${id}`)
-    }
+  const handleRecipeClick = (recipe) => {
+    // Add the recipe to recently viewed
+    addToRecentlyViewed(setRecentlyViewed, recipe)
+    navigateToRecipe(navigate, recipe.id)
   }
 
   return (
@@ -18,7 +21,7 @@ const LatestRecipes = ({ recipes }) => {
       <h2 className="mb-4 text-center">Latest Recipes</h2>
       <div className="recipes-list row justify-content-center">
         {sortedRecipes.map((recipe) => (
-          <div key={recipe.id} className="recipe-item col-6 col-sm-4 col-md-3 col-lg-2 text-center mb-4" onClick={() => handleRecipeClick(recipe.id)} style={{ cursor: 'pointer' }}>
+          <div key={recipe.id} className="recipe-item col-6 col-sm-4 col-md-3 col-lg-2 text-center mb-4" onClick={() => handleRecipeClick(recipe)} style={{ cursor: 'pointer' }}>
             {/* Recipe Thumbnail */}
             {recipe.thumbnail_url ? (
               <img
