@@ -7,6 +7,8 @@ const DiscoverMenu = ({ recipeId }) => {
   const [similarRecipes, setSimilarRecipes] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const recipesPerPage = 4
 
   useEffect(() => {
     const fetchSimilarRecipes = async () => {
@@ -39,11 +41,36 @@ const DiscoverMenu = ({ recipeId }) => {
     return <div>No similar recipes found.</div>
   }
 
+  // Pagination logic
+  const indexOfLastRecipe = currentPage * recipesPerPage
+  const indexOfFirstRecipe = indexOfLastRecipe - recipesPerPage
+  const currentRecipes = similarRecipes.slice(indexOfFirstRecipe, indexOfLastRecipe)
+  const totalPages = Math.ceil(similarRecipes.length / recipesPerPage)
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber)
+  }
+
   return (
-    <div className="recipe-grid">
-      {similarRecipes.map((recipe) => (
-        <RecipeCardWithDetail key={recipe.id} recipe={recipe} />
-      ))}
+    <div>
+      <div className="recipe-grid">
+        {currentRecipes.map((recipe) => (
+          <RecipeCardWithDetail key={recipe.id} recipe={recipe} />
+        ))}
+      </div>
+
+      {/* Pagination Controls */}
+      <div className="pagination">
+        {[...Array(totalPages)].map((_, index) => (
+          <button
+            key={index}
+            className={`pagination-button ${currentPage === index + 1 ? 'active' : ''}`}
+            onClick={() => handlePageChange(index + 1)}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
     </div>
   )
 }
