@@ -72,7 +72,8 @@ const DiscoverMenu = ({ recipeId }) => {
   const totalPages = Math.ceil(similarRecipes.length / recipesPerPage)
 
   return (
-    <div>
+    <div className='discover-menu-container'> 
+      <h2 className="mb-4">Discover Menu</h2>
       <div className="recipe-grid">
         {currentRecipes.map((recipe) => (
           <RecipeCardWithDetail key={recipe.id} recipe={recipe} />
