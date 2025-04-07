@@ -1,13 +1,14 @@
 import React, { useState, useCallback, useEffect } from 'react'
+import { useAtom } from 'jotai'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { getAutoCompleteSuggestions } from '../lib/api'
+import { recentSearchesAtom } from '../atoms/recentSearchesAtom'
 import debounce from 'lodash/debounce'
 
 const debouncedFetchSuggestions = debounce(async (value, setSuggestions) => {
   if (value.length > 2) {
     try {
       const data = await getAutoCompleteSuggestions(value)
-      console.log('Auto-complete Suggestions:', data)
       setSuggestions(data?.results || [])
     } catch (err) {
       console.error('Error fetching auto-complete suggestions:', err)
@@ -20,6 +21,7 @@ const debouncedFetchSuggestions = debounce(async (value, setSuggestions) => {
 const SearchBar = () => {
   const [query, setQuery] = useState('')
   const [suggestions, setSuggestions] = useState([])
+  const [recentSearches, setRecentSearches] = useAtom(recentSearchesAtom)
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -39,10 +41,20 @@ const SearchBar = () => {
   }
 
   const handleSuggestionClick = (suggestion) => {
-    console.log('Selected Suggestion:', suggestion)
-    setQuery(suggestion.display)
+    const selectedQuery = suggestion.display
+    console.log('Selected Suggestion:', selectedQuery)
+
+    // Update recent searches
+    setRecentSearches((prev) => {
+      const updatedSearches = [selectedQuery, ...prev.filter((item) => item !== selectedQuery)].slice(0, 5)
+      // localStorage.setItem('recentSearches', JSON.stringify(updatedSearches))
+      return updatedSearches
+    })
+
+    // Navigate to search results
+    setQuery(selectedQuery)
     setSuggestions([])
-    navigate(`/search-results?query=${encodeURIComponent(suggestion.display)}`)
+    navigate(`/search-results?query=${encodeURIComponent(selectedQuery)}`)
   }
 
   return (

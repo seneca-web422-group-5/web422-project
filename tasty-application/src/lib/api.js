@@ -47,6 +47,8 @@ export const getSimilarRecipes = (recipeId) =>
 const api = {
     getRecipeDetails,
     searchRecipes,
+    getAutoComplete,
+    getTags,
     getAutoCompleteSuggestions,
     getPopularCategories,
     getFeeds,
