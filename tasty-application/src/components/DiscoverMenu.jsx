@@ -41,6 +41,18 @@ const DiscoverMenu = ({ recipeId }) => {
     fetchSimilarRecipes()
   }, [recipeId])
 
+  useEffect(() => {
+    if (similarRecipes.length === 0) return
+
+    const totalPages = Math.ceil(similarRecipes.length / recipesPerPage)
+
+    const interval = setInterval(() => {
+      setCurrentPage((prevPage) => (prevPage === totalPages ? 1 : prevPage + 1))
+    }, 3000) // Change page every 5 seconds
+
+    return () => clearInterval(interval)
+  }, [similarRecipes, recipesPerPage])
+
   if (loading) {
     return <div>Loading similar recipes...</div>
   }
@@ -59,10 +71,6 @@ const DiscoverMenu = ({ recipeId }) => {
   const currentRecipes = similarRecipes.slice(indexOfFirstRecipe, indexOfLastRecipe)
   const totalPages = Math.ceil(similarRecipes.length / recipesPerPage)
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber)
-  }
-
   return (
     <div>
       <div className="recipe-grid">
@@ -77,7 +85,7 @@ const DiscoverMenu = ({ recipeId }) => {
           <button
             key={index}
             className={`pagination-button ${currentPage === index + 1 ? 'active' : ''}`}
-            onClick={() => handlePageChange(index + 1)}
+            onClick={() => setCurrentPage(index + 1)}
           >
             {index + 1}
           </button>
