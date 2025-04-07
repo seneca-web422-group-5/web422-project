@@ -8,7 +8,7 @@ const RecentlySearch = () => {
   const navigate = useNavigate()
 
   if (recentSearches.length === 0) {
-    return <div>No recent searches yet</div>
+    return <div className='text-center'>No recent searches yet</div>
   }
 
   const handleSearchClick = (search) => {
