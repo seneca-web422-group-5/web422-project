@@ -6,8 +6,8 @@ const Myhome = () => {
   return (
     <div>
       <h1>My Home Page</h1>
-      <RecentlyView />
       <RecentlySearch />
+      <RecentlyView />
     </div>
   )
 }
