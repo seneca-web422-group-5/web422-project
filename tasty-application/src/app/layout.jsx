@@ -7,9 +7,8 @@ import Categories from './categories/page'
 import Favorites from './favorites/page'
 import Login from './auth/login'
 import Signup from './auth/signup'
-import RecipePage from './recipe/page'
+import RecipePage from './receipt/[id]/page'
 import SearchResults from '../components/SearchResults'
-import CategoryDetailPage from './categories/CategoryDetail'
 
 const Layout = () => {
   return (
@@ -21,8 +20,8 @@ const Layout = () => {
       <Route path="/favorites" element={<Favorites />} />
       <Route path="/auth/login" element={<Login />} />
       <Route path="/auth/signup" element={<Signup />} />
-      <Route path="/categories/:categoryType" element={<CategoryDetailPage/>} />
-      <Route path="/recipe/:id" element={<RecipePage/>}/>
+      <Route path="/recipe/:id" element={<RecipePage />} />
+      <Route path="/search-results" element={<SearchResults />} />
     </Routes>
   )
 }
