@@ -1,4 +1,4 @@
-import "../styles/Category.css"
+import "../styles/CategoryPage.css"
 
 const CategoryCard = ({ category }) => {
   return (

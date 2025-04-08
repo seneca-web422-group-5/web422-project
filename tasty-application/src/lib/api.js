@@ -38,6 +38,8 @@ export const getAutoCompleteSuggestions = (query) =>  fetchFromTastyAPI('recipes
 export const getPopularCategories = async () => {  return fetchFromTastyAPI('tags/list')}
 export const getFeeds = (size = 1, timezone = '+0700', from = 0) =>  fetchFromTastyAPI('feeds/list', { size, timezone, from })
 export const getLatestRecipes = (from = 0, size = 100, tags = 'under_30_minutes') =>  fetchFromTastyAPI('recipes/list', { from, size, tags })
+export const getFullDetail = (id) => fetchFromTastyAPI(`recipes/get-more-info`, { id });
+
 
 // Assign the object to a variable
 const api = {
@@ -48,6 +50,7 @@ const api = {
     getFeeds,
     getLatestRecipes,
     getTags,
+    getFullDetail
   };
   
   // Export the variable as the default export

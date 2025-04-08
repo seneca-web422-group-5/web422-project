@@ -1,33 +1,37 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'; 
 import { Link } from 'react-router-dom';
 import api from '../../lib/api';
 import Pagination from '../../components/Pagination';
 import CategoryCard from '../../components/CategoryCard';
+import { useDataCache } from '../../context/DataCacheContext'; // ✅ import cache hook
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { getCachedData } = useDataCache(); // ✅ get from context
 
   const ITEMS_PER_PAGE = 12;
-
-  const totalPages = Math.ceil(categories.length / ITEMS_PER_PAGE);
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         setLoading(true);
-        const categoryData = await api.getTags();
         
-        const uniqueCategories = Array.from(
-          new Map(categoryData.results.map(cat => [cat.name, cat])).values()
-        );
+        // ✅ Use cache wrapper
+        const categoryData = await getCachedData("tags", () => api.getTags());
 
-        // Sort categories alphabetically
-        uniqueCategories.sort((a, b) => a.display_name.localeCompare(b.display_name));
+        if (categoryData?.results) {
+          const uniqueCategories = Array.from(
+            new Map(categoryData.results.map(cat => [cat.name, cat])).values()
+          );
 
-        setCategories(uniqueCategories);
+          uniqueCategories.sort((a, b) => a.display_name.localeCompare(b.display_name));
+          setCategories(uniqueCategories);
+        } else {
+          setError("No categories available.");
+        }
         setLoading(false);
       } catch (err) {
         setError("Failed to fetch categories.");
@@ -36,8 +40,11 @@ const Categories = () => {
     };
 
     fetchCategories();
-  }, []);
+  }, [getCachedData]);
 
+  // Calculate totalPages after setting categories
+  const totalPages = Math.ceil(categories.length / ITEMS_PER_PAGE);
+  
   const indexOfLast = currentPage * ITEMS_PER_PAGE;
   const indexOfFirst = indexOfLast - ITEMS_PER_PAGE;
   const currentCategories = categories.slice(indexOfFirst, indexOfLast);
@@ -46,13 +53,8 @@ const Categories = () => {
     setCurrentPage(page);
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <>
