@@ -13,7 +13,7 @@ const RecipePage = () => {
     const fetchRecipeDetails = async () => {
       try {
         setLoading(true);
-        const data = await getFullDetail(id); // Use the helper function
+        const data = await getFullDetail(id); 
         setRecipeDetails(data);
         setLoading(false);
       } catch (err) {
