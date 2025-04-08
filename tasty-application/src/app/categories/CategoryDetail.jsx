@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import api from '../../lib/api';
 import Pagination from '../../components/Pagination';
 import RecipeCard from '../../components/RecipeCard';
-import Sort from '../../components/Sort'; // Import the SortDropdown component
+import Sort from '../../components/Sort'; 
 import "../../styles/CategoryMeals.css";
 
 const CategoryDetailPage = () => {
@@ -38,7 +38,7 @@ const CategoryDetailPage = () => {
     const fetchRecipes = async () => {
       try {
         setLoading(true);
-        const data = await api.searchRecipes(categoryType); // Ensure this matches your API
+        const data = await api.searchRecipes(categoryType); 
         setRecipes(data.results || []); // Assuming 'results' is the property in the response
         setSortedRecipes(data.results || []); // Set initial sorted recipes to the fetched ones
         cache.current[categoryType] = data.results || []; // Cache the fetched data
@@ -61,11 +61,11 @@ const CategoryDetailPage = () => {
       } else if (option === 'rating') {
         sorted.sort((a, b) => b.rating - a.rating);
       } else if (option === 'id') {
-        sorted.sort((a, b) => a.id - b.id); // Sort by ID
+        sorted.sort((a, b) => a.id - b.id); 
       }
 
       if (order === 'desc') {
-        sorted.reverse(); // Reverse the order for descending
+        sorted.reverse(); 
       }
 
       setSortedRecipes(sorted);
