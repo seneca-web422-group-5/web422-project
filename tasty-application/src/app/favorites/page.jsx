@@ -14,10 +14,10 @@ const Favorites = () => {
       setFavorites(updatedFavorites);
     };
 
-    window.addEventListener('favoriteChanged', handleFavoriteChange); // Listen for changes
+    window.addEventListener('favoriteChanged', handleFavoriteChange); 
 
     return () => {
-      window.removeEventListener('favoriteChanged', handleFavoriteChange); // Cleanup
+      window.removeEventListener('favoriteChanged', handleFavoriteChange); 
     };
   }, []);
 
