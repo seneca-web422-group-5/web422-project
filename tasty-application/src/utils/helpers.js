@@ -28,4 +28,12 @@ const navigateToRecipe = (navigate, id) => {
     }
   }
 
-export { renderStars, navigateToRecipe }
+const filterRecipesByTag = (recipes, tagName) => {
+    return recipes.filter((recipe) =>
+      recipe.tags?.some((tag) => tag.name === tagName)
+    );
+  };
+  
+
+export { renderStars, addToRecentlyViewed, navigateToRecipe, filterRecipesByTag }
+
