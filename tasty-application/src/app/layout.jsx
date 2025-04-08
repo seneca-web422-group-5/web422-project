@@ -23,6 +23,7 @@ const Layout = () => {
       <Route path="/auth/signup" element={<Signup />} />
       <Route path="/categories/:categoryType" element={<CategoryDetailPage/>} />
       <Route path="/recipe/:id" element={<RecipePage/>}/>
+      <Route path="/search-results" element={<SearchResults />} />
     </Routes>
   )
 }

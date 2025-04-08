@@ -41,8 +41,6 @@ export const getLatestRecipes = (from = 0, size = 100, tags = 'under_30_minutes'
 export const getSimilarRecipes = (recipeId) =>
   fetchFromTastyAPI('recipes/list-similarities', { recipe_id: recipeId })
 export const getFullDetail = (id) => fetchFromTastyAPI(`recipes/get-more-info`, { id });
-export const getSimilarRecipes = (recipeId) =>
-  fetchFromTastyAPI('recipes/list-similarities', { recipe_id: recipeId })
 
 
 // Assign the object to a variable
@@ -60,5 +58,5 @@ const api = {
     getSimilarRecipes
   };
   
-
+export default api;
 
