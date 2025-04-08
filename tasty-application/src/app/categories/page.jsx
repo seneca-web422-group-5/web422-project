@@ -3,14 +3,14 @@ import { Link } from 'react-router-dom';
 import api from '../../lib/api';
 import Pagination from '../../components/Pagination';
 import CategoryCard from '../../components/CategoryCard';
-import { useDataCache } from '../../context/DataCacheContext'; // ✅ import cache hook
+import { useDataCache } from '../../context/DataCacheContext'; 
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { getCachedData } = useDataCache(); // ✅ get from context
+  const { getCachedData } = useDataCache(); 
 
   const ITEMS_PER_PAGE = 12;
 
@@ -19,7 +19,6 @@ const Categories = () => {
       try {
         setLoading(true);
         
-        // ✅ Use cache wrapper
         const categoryData = await getCachedData("tags", () => api.getTags());
 
         if (categoryData?.results) {
@@ -42,7 +41,7 @@ const Categories = () => {
     fetchCategories();
   }, [getCachedData]);
 
-  // Calculate totalPages after setting categories
+  
   const totalPages = Math.ceil(categories.length / ITEMS_PER_PAGE);
   
   const indexOfLast = currentPage * ITEMS_PER_PAGE;
