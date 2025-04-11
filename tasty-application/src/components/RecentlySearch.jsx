@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { useAtom } from 'jotai'
 import { useNavigate } from 'react-router-dom'
 import { recentSearchesAtom } from '../atoms/recentSearchesAtom'
-import 'bootstrap/dist/css/bootstrap.min.css'
 
 const RecentlySearch = () => {
   const [recentSearches] = useAtom(recentSearchesAtom)
@@ -22,9 +21,9 @@ const RecentlySearch = () => {
   }
 
   return (
-    <div className="dropdown mb-4">
+    <div className="dropdown">
       <button
-        className="btn btn-secondary dropdown-toggle"
+        className="recently-search-btn dropdown-toggle"
         type="button"
         id="recentSearchesDropdown"
         data-bs-toggle="dropdown"
@@ -39,10 +38,7 @@ const RecentlySearch = () => {
       >
         {recentSearches.map((search, index) => (
           <li key={index}>
-            <button
-              className="dropdown-item"
-              onClick={() => handleSearchClick(search)}
-            >
+            <button className="dropdown-item" onClick={() => handleSearchClick(search)}>
               {search}
             </button>
           </li>
