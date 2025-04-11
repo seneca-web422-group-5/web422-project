@@ -56,3 +56,36 @@
     background: #007bff;
     color: #fff;
   }
+
+  .recently-search-btn {
+    background-color: #FF642F;
+    border: none;
+    color: #FFFFFF;
+    padding: 8px 16px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  .recently-search-btn:hover {
+    background-color: #e65528;
+  }
+  
+  .recently-search-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 100, 47, 0.5);
+  }
+
+  .search-bar .form-control {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .search-bar .form-control:focus {
+    border-color: #FF642F;
+    box-shadow: 0 0 5px rgba(255, 100, 47, 0.5);
+    outline: none;
+  }

@@ -4,9 +4,12 @@ import RecentlyView from '../../components/RecentlyView'
 
 const Myhome = () => {
   return (
-    <div>
-      <h1>My Home Page</h1>
-      <RecentlySearch />
+    <div className="container">
+      <div className="d-flex justify-content-between align-items-center mt-4">
+        <h2>My Home Page</h2>
+        <RecentlySearch />
+      </div>
+      <hr />
       <RecentlyView />
     </div>
   )
