@@ -68,3 +68,24 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+### Design System
+
+#### Typography
+- **Playfair Display**: Used for headings and titles.
+- **Inter**: Used for body text and smaller elements.
+
+#### Colors
+| Color Name       | Hex Code   |
+|------------------|------------|
+| Orange           | `#FF642F` |
+| Light Peach      | `#FFD7C9` |
+| Light Blue       | `#E3F1FF` |
+| Black            | `#000000` |
+| Gray             | `#7F7F7F` |
+| Light Gray       | `#E8E8E8` |
+| Off White        | `#F9F9F9` |
+
+#### Shadows
+- **Soft Shadow**: Subtle shadow for cards and containers.
+- **Modal Shadow**: Stronger shadow for modals and overlays.
