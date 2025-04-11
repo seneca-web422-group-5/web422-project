@@ -110,10 +110,12 @@ const CategoryDetailPage = () => {
   }
 
   return (
-    <div>
-      <h1>{categoryType} Recipes</h1>
-
-      <Sort onSortChange={handleSortChange} />
+    <div className="container">
+      <div className="d-flex justify-content-between align-items-center mt-4">
+        <h2>{categoryType} Recipes</h2>
+        <Sort onSortChange={handleSortChange} />
+      </div>
+      <hr />
 
       <div className="recipes-grid">
         {currentRecipes.map((recipe) => (
