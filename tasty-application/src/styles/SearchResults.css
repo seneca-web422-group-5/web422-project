@@ -77,3 +77,15 @@
     outline: none;
     box-shadow: 0 0 0 3px rgba(255, 100, 47, 0.5);
   }
+
+  .search-bar .form-control {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .search-bar .form-control:focus {
+    border-color: #FF642F;
+    box-shadow: 0 0 5px rgba(255, 100, 47, 0.5);
+    outline: none;
+  }

@@ -1,0 +1,16 @@
+/* Default Navbar Link Styles */
+.navbar .nav-link {
+    color: #7F7F7F; /* Default Gray */
+    transition: color 0.3s ease; /* Smooth transition for hover and active states */
+  }
+  
+  /* Hover State */
+  .navbar .nav-link:hover {
+    color: #FF642F; /* Primary Orange on hover */
+  }
+  
+  /* Active State */
+  .navbar .nav-link.active {
+    color: #FF642F; /* Primary Orange for active link */
+    font-weight: bold; /* Optional: Make the active link bold */
+  }

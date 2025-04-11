@@ -1,7 +1,8 @@
 import React, { useContext } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { NavLink, Link, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
 import SearchBar from './SearchBar'
+import '../styles/Header.css'
 
 const Header = () => {
   //   const { user, logout } = useContext(AuthContext)
@@ -48,33 +49,53 @@ const Header = () => {
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             {/* Homepage Link */}
             <li className="nav-item">
-              <Link className="nav-link d-flex align-items-center" to="/">
+              <NavLink
+                className={({ isActive }) =>
+                  `nav-link d-flex align-items-center ${isActive ? 'active' : ''}`
+                }
+                to="/"
+              >
                 <i className="bi bi-house-door me-1"></i> Homepage
-              </Link>
+              </NavLink>
             </li>
 
             {/* My Home (Visible for Logged-In Users) */}
             {user && (
               <li className="nav-item">
-                <Link className="nav-link d-flex align-items-center" to="/myhome">
+                <NavLink
+                  className={({ isActive }) =>
+                    `nav-link d-flex align-items-center ${isActive ? 'active' : ''}`
+                  }
+                  to="/myhome"
+                >
                   <i className="bi bi-house-heart me-1"></i> My Home
-                </Link>
+                </NavLink>
               </li>
             )}
 
             {/* Categories Link */}
             <li className="nav-item">
-              <Link className="nav-link d-flex align-items-center" to="/categories">
+              <NavLink
+                className={({ isActive }) =>
+                  `nav-link d-flex align-items-center ${isActive ? 'active' : ''}`
+                }
+                to="/categories"
+              >
                 <i className="bi bi-grid me-1"></i> Categories
-              </Link>
+              </NavLink>
             </li>
 
             {/* Favourite (Visible for Logged-In Users) */}
             {user && (
               <li className="nav-item">
-                <Link className="nav-link d-flex align-items-center" to="/favorites">
+                <NavLink
+                  className={({ isActive }) =>
+                    `nav-link d-flex align-items-center ${isActive ? 'active' : ''}`
+                  }
+                  to="/favorites"
+                >
                   <i className="bi bi-heart me-1"></i> Favourite
-                </Link>
+                </NavLink>
               </li>
             )}
           </ul>
