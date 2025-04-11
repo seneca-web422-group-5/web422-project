@@ -114,23 +114,24 @@ const Homepage = () => {
           const popularRecipesCarousel = data.results.find(
             (result) => result.type === 'carousel' && result.name === 'Popular Recipes This Week'
           )
-          const mappedRecommendations = popularRecipesCarousel?.items?.map((item) => ({
-            id: item?.id,
-            name: item?.name,
-            thumbnail_url: item?.thumbnail_url,
-            author: item?.credits?.[0]?.name || 'Unknown Author',
-            tags: item?.tags?.map((tag) => tag.display_name) || [],
-            user_ratings: item?.user_ratings || null,
-            description: item?.description || 'No description available.',
-            video_url: item?.video_url || null,
-            instructions: item?.instructions || [],
-            prep_time_minutes: item?.prep_time_minutes || null,
-            cook_time_minutes: item?.cook_time_minutes || null,
-            total_time_minutes: item?.total_time_minutes || null,
-            servings: item?.servings || null,
-            nutrition: item?.nutrition || null,
-            created_at: item?.created_at || null 
-          })) || []
+          const mappedRecommendations =
+            popularRecipesCarousel?.items?.map((item) => ({
+              id: item?.id,
+              name: item?.name,
+              thumbnail_url: item?.thumbnail_url,
+              author: item?.credits?.[0]?.name || 'Unknown Author',
+              tags: item?.tags?.map((tag) => tag.display_name) || [],
+              user_ratings: item?.user_ratings || null,
+              description: item?.description || 'No description available.',
+              video_url: item?.video_url || null,
+              instructions: item?.instructions || [],
+              prep_time_minutes: item?.prep_time_minutes || null,
+              cook_time_minutes: item?.cook_time_minutes || null,
+              total_time_minutes: item?.total_time_minutes || null,
+              servings: item?.servings || null,
+              nutrition: item?.nutrition || null,
+              created_at: item?.created_at || null
+            })) || []
 
           localStorage.setItem(
             'recommendations',
@@ -179,11 +180,11 @@ const Homepage = () => {
       await Promise.all([fetchRandomRecipe()])
       setLoading(false)
     }
-  
+
     const fetchNonCriticalData = async () => {
       await Promise.all([fetchRecommendations(), fetchCategories(), fetchLatestRecipes()])
     }
-  
+
     fetchCriticalData()
     fetchNonCriticalData()
   }, [])
