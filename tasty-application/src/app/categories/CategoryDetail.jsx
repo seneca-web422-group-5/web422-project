@@ -1,14 +1,11 @@
-import { useParams, Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import api from '../../lib/api'
-import { useNavigate } from 'react-router-dom'
-import { navigateToRecipe } from '../../utils/helpers'
 import Pagination from '../../components/Pagination'
 import RecipeCardWithDetail from '../../components/RecipeCardWithDetail'
 import Sort from '../../components/Sort'
 
 const CategoryDetailPage = () => {
-  const navigate = useNavigate()
   const { categoryType } = useParams() // Get categoryType from URL
   const [recipes, setRecipes] = useState([])
   const [sortedRecipes, setSortedRecipes] = useState([])
