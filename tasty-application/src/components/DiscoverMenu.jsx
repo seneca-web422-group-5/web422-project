@@ -46,11 +46,11 @@ const DiscoverMenu = ({ recipeId }) => {
 
     const totalPages = Math.ceil(similarRecipes.length / recipesPerPage)
 
-    const interval = setInterval(() => {
-      setCurrentPage((prevPage) => (prevPage === totalPages ? 1 : prevPage + 1))
-    }, 5000) // Change page every 5 seconds
+    // const interval = setInterval(() => {
+    //   setCurrentPage((prevPage) => (prevPage === totalPages ? 1 : prevPage + 1))
+    // }, 5000) // Change page every 5 seconds
 
-    return () => clearInterval(interval)
+    // return () => clearInterval(interval)
   }, [similarRecipes, recipesPerPage])
 
   if (loading) {
@@ -72,7 +72,7 @@ const DiscoverMenu = ({ recipeId }) => {
   const totalPages = Math.ceil(similarRecipes.length / recipesPerPage)
 
   return (
-    <div className='discover-menu-container'> 
+    <div className="discover-menu-container">
       <h2 className="mb-4">Discover Menu</h2>
       <div className="recipe-grid">
         {currentRecipes.map((recipe) => (

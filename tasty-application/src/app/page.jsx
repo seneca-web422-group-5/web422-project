@@ -226,7 +226,7 @@ const Homepage = () => {
       <RecommendByUs recommendations={recommendations} />
       <LatestRecipes recipes={latestRecipes} />
       {hasMore && (
-        <div className="text-center mt-4">
+        <div className="text-center">
           <button className="btn btn-primary" onClick={handleLoadMore}>
             Load More
           </button>
