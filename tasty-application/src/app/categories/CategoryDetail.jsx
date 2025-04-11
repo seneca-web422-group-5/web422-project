@@ -1,11 +1,14 @@
 import { useParams, Link } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import api from '../../lib/api'
+import { useNavigate } from 'react-router-dom'
+import { navigateToRecipe } from '../../utils/helpers'
 import Pagination from '../../components/Pagination'
-import RecipeCard from '../../components/RecipeCard'
+import RecipeCardWithDetail from '../../components/RecipeCardWithDetail'
 import Sort from '../../components/Sort'
 
 const CategoryDetailPage = () => {
+  const navigate = useNavigate()
   const { categoryType } = useParams() // Get categoryType from URL
   const [recipes, setRecipes] = useState([])
   const [sortedRecipes, setSortedRecipes] = useState([])
@@ -117,12 +120,9 @@ const CategoryDetailPage = () => {
       </div>
       <hr />
 
-      <div className="recipes-grid">
+      <div className="recipe-grid">
         {currentRecipes.map((recipe) => (
-          <Link key={recipe.id} to={`/recipe/${recipe.id}`}>
-            <h5>{recipe.id}</h5>
-            <RecipeCard recipe={recipe} />
-          </Link>
+          <RecipeCardWithDetail key={recipe.id} recipe={recipe} />
         ))}
       </div>
 
