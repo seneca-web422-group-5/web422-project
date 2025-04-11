@@ -52,8 +52,9 @@ const SearchResults = () => {
   }
 
   return (
-    <div>
-      <h1>Search Results for "{query}"</h1>
+    <div className="container">
+      <h2 className="mt-4">Search Results for "{query}"</h2>
+      <hr />
       <div className="results-grid">
         {currentResults.map((recipe) => (
           <RecipeCardWithDetail key={recipe.id} recipe={recipe} />
