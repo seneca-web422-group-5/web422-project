@@ -1,5 +1,6 @@
 .recommend-container {
   padding: 20px;
+  background-color: #F9F9F9;
 }
 
 .recommend-list {
@@ -10,26 +11,26 @@
 }
 
 .recommend-card {
-  border: 1px solid #ddd;
+  border: 1px solid #E8E8E8;
   border-radius: 8px;
   padding: 16px;
   width: 300px;
   flex: 0 0 auto;
   text-align: center;
   background-color: #fff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(255, 215, 201, 0.5);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .recommend-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 12px rgba(255, 215, 201, 0.7);
 }
 
 .recommend-card-image {
   width: 100%;
   height: 150px;
-  background-color: #f0f0f0;
+  background-color: #E8E8E8;
   margin-bottom: 8px;
   overflow: hidden;
   border-radius: 8px;
@@ -39,6 +40,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  cursor: pointer;
 }
 
 .recommend-card-no-image {
@@ -46,28 +48,30 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #aaa;
+  color: #7F7F7F;
   font-size: 14px;
 }
 
 .recommend-card-title {
   font-size: 16px;
   margin: 8px 0;
+  color: #000000;
   transition: color 0.2s ease;
 }
 
 .recommend-card-title:hover {
-  color: #007bff;
+  color: #FF642F;
+  cursor: pointer;
 }
 
 .recommend-card-author {
   font-size: 14px;
-  color: #555;
+  color: #7F7F7F;
 }
 
 .recommend-card-rating-count {
   font-size: 12px;
-  color: lightgray;
+  color: #E8E8E8;
 }
 
 .recommend-card-tags {
@@ -76,11 +80,12 @@
 
 .recommend-card-tag {
   display: inline-block;
-  background-color: #eee;
+  background-color: #FFD7C9;
   border-radius: 12px;
   padding: 4px 8px;
   font-size: 12px;
   margin: 2px;
+  color: #000000;
 }
 
 .recommend-card-stars {
@@ -91,9 +96,52 @@
 
 .star {
   font-size: 16px;
-  color: #ccc;
+  color: #E8E8E8;
 }
 
 .star.filled {
-  color: #ffc107;
+  color: #FF642F;
+}
+
+.more-info-icon i {
+  font-size: 20px;
+  color: #FF642F;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.more-info-icon:hover i {
+  transform: scale(1.1);
+  cursor: pointer;
+}
+
+/* Favorite Heart Icon */
+.recommend-card-favorite-icon {
+  cursor: pointer;
+  font-size: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+}
+
+.recommend-card-favorite-icon i {
+  color: #FFFFFF;
+}
+
+.recommend-card-favorite-icon:hover {
+  background-color: #FFD7C9;
+  transform: scale(1.1);
+}
+
+.recommend-card-favorite-icon i.bi-heart-fill {
+  color: #FF642F;
+  background-color: transparent;
+  border: none;
+}
+
+.recommend-card-favorite-icon i.bi-heart {
+  color: #7F7F7F;
 }

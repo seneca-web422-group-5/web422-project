@@ -201,7 +201,7 @@ const Homepage = () => {
     <div>
       {randomRecipe && (
         <div
-          className="random-recipe bg-light p-4 mb-4 mt-4 d-flex flex-column flex-md-row align-items-center"
+          className="random-recipe bg-secondary p-4 mb-4 mt-4 d-flex flex-column flex-md-row align-items-center"
           onClick={handleRecipeClick}
           style={{ cursor: 'pointer' }}
         >

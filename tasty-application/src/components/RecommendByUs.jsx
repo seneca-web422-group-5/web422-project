@@ -29,7 +29,6 @@ const RecommendByUs = ({ recommendations = [] }) => {
     navigateToRecipe(navigate, recipe.id)
   }
 
-
   if (!recommendations.length) {
     return <div>No recommendations available.</div>
   }
@@ -41,8 +40,7 @@ const RecommendByUs = ({ recommendations = [] }) => {
         {recommendations.map((item) => (
           <div key={item.id} className="recommend-card">
             {/* image */}
-            <div className="recommend-card-image" onClick={() => handleCardClick(item)}
-              style={{ cursor: 'pointer' }}>
+            <div className="recommend-card-image" onClick={() => handleCardClick(item)}>
               {item.thumbnail_url ? (
                 <img src={item.thumbnail_url} alt={item.name} />
               ) : (
@@ -61,8 +59,9 @@ const RecommendByUs = ({ recommendations = [] }) => {
               <p className="recommend-card-no-rating">No Ratings</p>
             )}
             {/* recipe name */}
-            <h3 className="recommend-card-title"onClick={() => handleCardClick(item)}
-              style={{ cursor: 'pointer' }}>{item.name}</h3>
+            <h3 className="recommend-card-title" onClick={() => handleCardClick(item)}>
+              {item.name}
+            </h3>
             {/* author */}
             <p className="recommend-card-author">by {item.author}</p>
             {/* tags */}
@@ -79,11 +78,10 @@ const RecommendByUs = ({ recommendations = [] }) => {
             </div>
             {/* info icon */}
             <div
-              className="recommend-card-info-icon d-flex justify-content-end"
+              className="more-info-icon d-flex justify-content-end"
               onClick={() => handleMoreDetailsClick(item)}
-              style={{ cursor: 'pointer', marginTop: '10px', textAlign: 'center' }}
             >
-              <i className="bi bi-info-circle" style={{ fontSize: '20px', color: '#007bff' }}></i>
+              <i className="bi bi-info-circle"></i>
             </div>
           </div>
         ))}
