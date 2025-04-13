@@ -11,6 +11,7 @@ import RecipePage from './recipe/page'
 import SearchResults from '../components/SearchResults'
 import CategoryDetailPage from './categories/CategoryDetail'
 import NotFound from '../NotFound'
+import TestDatabase from '../components/TestDatabaseClient'
 
 const Layout = () => {
   return (
@@ -25,6 +26,7 @@ const Layout = () => {
       <Route path="/categories/:categoryType" element={<CategoryDetailPage />} />
       <Route path="/recipe/:id" element={<RecipePage />} />
       <Route path="/search-results" element={<SearchResults />} />
+      <Route path="/test-db" element={<TestDatabase />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   )
