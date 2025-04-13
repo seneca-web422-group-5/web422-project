@@ -7,6 +7,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^13.5.0",
+    "bcryptjs": "^3.0.2",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "datatables": "^1.10.18",
@@ -16,8 +17,10 @@
     "jotai": "^2.12.2",
     "jquery": "^3.7.1",
     "lodash": "^4.17.21",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "mongoose": "^8.13.2",
+    "next": "^15.3.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "react-router-dom": "^7.4.1",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
@@ -46,5 +49,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "msw": "^2.7.4"
   }
 }

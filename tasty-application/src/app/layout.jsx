@@ -1,3 +1,4 @@
+// src/app/layout.jsx
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Homepage from './page'
@@ -5,8 +6,8 @@ import Myhome from './myhome/page'
 import Profile from './profile/page'
 import Categories from './categories/page'
 import Favorites from './favorites/page'
-import Login from './auth/login'
-import Signup from './auth/signup'
+import Login from './auth/login/page'   // Direct path to login page component
+import Signup from './auth/signup/page' // Direct path to signup page component
 import RecipePage from './receipt/[id]/page'
 import SearchResults from '../components/SearchResults'
 
