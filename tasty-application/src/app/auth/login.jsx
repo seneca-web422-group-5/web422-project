@@ -1,51 +1,51 @@
 // src/app/auth/login.jsx
-import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../context/AuthContext';
+import React, { useState, useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { AuthContext } from '../../context/AuthContext'
 
 const Login = () => {
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
-  const { login } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const [formData, setFormData] = useState({ email: '', password: '' })
+  const [error, setError] = useState('')
+  const { login } = useContext(AuthContext)
+  const navigate = useNavigate()
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    console.log('Login form submitted:', formData);
+    e.preventDefault()
+    setError('')
     try {
       const response = await fetch('http://localhost:3001/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
-      });
-      const data = await response.json();
+      })
+      const data = await response.json()
       if (!response.ok) {
-        setError(data.error || 'Error logging in');
+        setError(data.error || 'Error logging in')
       } else {
         // Call the context login() function
-        login(data.token);
-        console.log('Logged in successfully. Token saved in localStorage.');
-        navigate('/');  // Redirect as needed
+        login(data.token)
+        navigate('/') // Redirect as needed
       }
     } catch (err) {
-      console.error('Error logging in:', err);
-      setError(err.message);
+      console.error('Error logging in:', err)
+      setError(err.message)
     }
-  };
+  }
 
   return (
     <div className="container mt-5">
       <h1 className="text-center mb-4">Login</h1>
-      { error && <p className="text-center text-danger">{error}</p> }
+      {error && <p className="text-center text-danger">{error}</p>}
       <form onSubmit={handleSubmit} className="w-50 mx-auto">
         <div className="mb-3">
-          <label htmlFor="email" className="form-label">Email</label>
+          <label htmlFor="email" className="form-label">
+            Email
+          </label>
           <input
             type="email"
             className="form-control"
@@ -53,10 +53,13 @@ const Login = () => {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            required />
+            required
+          />
         </div>
         <div className="mb-3">
-          <label htmlFor="password" className="form-label">Password</label>
+          <label htmlFor="password" className="form-label">
+            Password
+          </label>
           <input
             type="password"
             className="form-control"
@@ -64,12 +67,15 @@ const Login = () => {
             name="password"
             value={formData.password}
             onChange={handleChange}
-            required />
+            required
+          />
         </div>
-        <button type="submit" className="btn btn-primary w-100">Login</button>
+        <button type="submit" className="btn btn-primary w-100">
+          Login
+        </button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

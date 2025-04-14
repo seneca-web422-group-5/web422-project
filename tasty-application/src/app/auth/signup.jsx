@@ -14,7 +14,6 @@ const Signup = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    console.log('Signup form submitted:', formData)
     // Add your signup logic here
   }
 

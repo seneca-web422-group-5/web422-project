@@ -6,7 +6,6 @@ const BASE_URL = 'https://tasty.p.rapidapi.com'
 const API_KEY = process.env.REACT_APP_API_KEY // Store securely (e.g., env variables)
 
 const fetchFromTastyAPI = async (endpoint, params = {}) => {
-  console.log(API_KEY)
   const url = new URL(`${BASE_URL}/${endpoint}`)
   Object.keys(params).forEach((key) => url.searchParams.append(key, params[key]))
 
