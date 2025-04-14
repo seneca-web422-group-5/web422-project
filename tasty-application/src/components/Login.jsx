@@ -1,13 +1,9 @@
-// src/components/Login.jsx
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -20,7 +16,6 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    console.log('Login form submitted:', formData);
     try {
       const response = await fetch('http://localhost:3001/api/auth/login', {
         method: 'POST',
@@ -31,13 +26,10 @@ const Login = () => {
       if (!response.ok) {
         setError(data.error || 'Login failed');
       } else {
-        // Call the context login() function with the token
         login(data.token);
-        console.log('Logged in successfully. Token saved in localStorage.');
-        navigate('/'); // Redirect to homepage
+        navigate('/');
       }
     } catch (err) {
-      console.error('Error logging in:', err);
       setError(err.message);
     }
   };

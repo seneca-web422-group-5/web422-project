@@ -1,4 +1,3 @@
-// src/App.js
 import React from 'react';
 import { AuthProvider } from './context/AuthContext';
 import Header from './components/Header';
