@@ -1,20 +1,21 @@
-import React from 'react'
-import Header from './components/Header'
-import Footer from './components/Footer'
-import AuthProvider from './context/AuthContext'
-import Layout from './app/layout'
-import { DataCacheProvider } from './context/DataCacheContext'
+// src/App.js
+import React from 'react';
+import { AuthProvider } from './context/AuthContext';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import Layout from './app/layout';
+import { DataCacheProvider } from './context/DataCacheContext';
 
 const App = () => {
   return (
     <AuthProvider>
       <DataCacheProvider>
         <Header />
-          <Layout />
+        <Layout />
         <Footer />
-      </DataCacheProvider>      
+      </DataCacheProvider>
     </AuthProvider>
-  )
-}
+  );
+};
 
-export default App
+export default App;

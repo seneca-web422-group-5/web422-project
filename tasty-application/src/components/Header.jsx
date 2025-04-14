@@ -1,5 +1,6 @@
-import React, { useContext } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { NavLink, Link, useNavigate } from 'react-router-dom'
+import {jwtDecode} from 'jwt-decode';
 import { AuthContext } from '../context/AuthContext'
 import SearchBar from './SearchBar'
 import '../styles/Header.css'
@@ -8,20 +9,16 @@ const Header = () => {
   //   const { user, logout } = useContext(AuthContext)
 
   // Mock user for testing purposes
-  const user = {
-    name: 'John Doe',
-    email: 'john.doe@example.com'
-  }
-  const logout = () => {
-    console.log('User logged out')
-  }
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-  const navigate = useNavigate()
+  console.log("Header renders with user:", user);
 
   const handleLogout = () => {
-    logout()
-    navigate('/')
-  }
+    logout();
+    navigate('/auth/login');
+  };
+
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">

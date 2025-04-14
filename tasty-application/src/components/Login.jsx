@@ -1,10 +1,13 @@
-// src/app/auth/login.jsx
+// src/components/Login.jsx
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../context/AuthContext';
+import { AuthContext } from '../context/AuthContext';
 
 const Login = () => {
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
   const [error, setError] = useState('');
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -26,12 +29,12 @@ const Login = () => {
       });
       const data = await response.json();
       if (!response.ok) {
-        setError(data.error || 'Error logging in');
+        setError(data.error || 'Login failed');
       } else {
-        // Call the context login() function
+        // Call the context login() function with the token
         login(data.token);
         console.log('Logged in successfully. Token saved in localStorage.');
-        navigate('/');  // Redirect as needed
+        navigate('/'); // Redirect to homepage
       }
     } catch (err) {
       console.error('Error logging in:', err);
@@ -42,29 +45,31 @@ const Login = () => {
   return (
     <div className="container mt-5">
       <h1 className="text-center mb-4">Login</h1>
-      { error && <p className="text-center text-danger">{error}</p> }
+      {error && <p className="text-center text-danger">{error}</p>}
       <form onSubmit={handleSubmit} className="w-50 mx-auto">
         <div className="mb-3">
           <label htmlFor="email" className="form-label">Email</label>
-          <input
+          <input 
             type="email"
             className="form-control"
             id="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
-            required />
+            required 
+          />
         </div>
         <div className="mb-3">
           <label htmlFor="password" className="form-label">Password</label>
-          <input
+          <input 
             type="password"
             className="form-control"
             id="password"
             name="password"
             value={formData.password}
             onChange={handleChange}
-            required />
+            required 
+          />
         </div>
         <button type="submit" className="btn btn-primary w-100">Login</button>
       </form>
