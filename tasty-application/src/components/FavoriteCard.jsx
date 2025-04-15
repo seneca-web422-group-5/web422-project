@@ -2,21 +2,37 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import RecipeModal from './RecipeModal'
 import { navigateToRecipe } from '../utils/helpers'
+import api from '../lib/api'
 import '../styles/RecipeCardWithDetail.css'
 
 const FavoriteCardWithDetail = ({ recipe, onRemove }) => {
   const navigate = useNavigate()
   const [showModal, setShowModal] = useState(false)
   const [page, setPage] = useState(1)
+  const [selectedRecipe, setSelectedRecipe] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   const handleCardClick = () => {
     navigateToRecipe(navigate, recipe.id)
   }
 
-  const handleMoreInfo = (e) => {
+  const handleMoreInfo = async (e) => {
     e.stopPropagation()
-    setShowModal(true)
-    setPage(1)
+    setLoading(true)
+    try {
+      const fullRecipe = await api.getFullDetail(recipe.id)
+      if (fullRecipe) {
+        setSelectedRecipe(fullRecipe)
+        setShowModal(true)
+        setPage(1)
+      } else {
+        console.error('No full recipe data found')
+      }
+    } catch (err) {
+      console.error('Error fetching full recipe:', err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleRemove = (e) => {
@@ -26,6 +42,7 @@ const FavoriteCardWithDetail = ({ recipe, onRemove }) => {
 
   const closeModal = () => {
     setShowModal(false)
+    setSelectedRecipe(null)
   }
 
   return (
@@ -47,8 +64,8 @@ const FavoriteCardWithDetail = ({ recipe, onRemove }) => {
           <button className="btn btn-primary btn-sm" onClick={handleCardClick}>
             View
           </button>
-          <button className="btn btn-secondary btn-sm" onClick={handleMoreInfo}>
-            More Info
+          <button className="btn btn-secondary btn-sm" onClick={handleMoreInfo} disabled={loading}>
+            {loading ? 'Loading...' : 'More Info'}
           </button>
           <button className="btn btn-danger btn-sm" onClick={handleRemove}>
             Remove
@@ -56,9 +73,9 @@ const FavoriteCardWithDetail = ({ recipe, onRemove }) => {
         </div>
       </div>
 
-      {showModal && (
+      {showModal && selectedRecipe && (
         <RecipeModal
-          selectedRecipe={recipe}
+          selectedRecipe={selectedRecipe}
           page={page}
           setPage={setPage}
           closeModal={closeModal}
