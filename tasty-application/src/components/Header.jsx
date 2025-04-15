@@ -6,9 +6,6 @@ import SearchBar from './SearchBar'
 import '../styles/Header.css'
 
 const Header = () => {
-  //   const { user, logout } = useContext(AuthContext)
-
-  // Mock user for testing purposes
   const { user, logout } = useContext(AuthContext)
   const navigate = useNavigate()
 
@@ -66,6 +63,18 @@ const Header = () => {
                 </NavLink>
               </li>
             )}
+
+            {/* Community Link */}
+            <li className="nav-item">
+              <NavLink
+                className={({ isActive }) =>
+                  `nav-link d-flex align-items-center ${isActive ? 'active' : ''}`
+                }
+                to="/community"
+              >
+                <i className="bi bi-people me-1"></i> Community
+              </NavLink>
+            </li>
 
             {/* Categories Link */}
             <li className="nav-item">
@@ -155,4 +164,4 @@ const Header = () => {
   )
 }
 
-export default Header
+export default Header;

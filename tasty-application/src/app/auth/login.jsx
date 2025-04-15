@@ -4,38 +4,39 @@ import { useNavigate } from 'react-router-dom'
 import { AuthContext } from '../../context/AuthContext'
 
 const Login = () => {
-  const [formData, setFormData] = useState({ email: '', password: '' })
-  const [error, setError] = useState('')
-  const { login } = useContext(AuthContext)
-  const navigate = useNavigate()
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  // Use the environment variable with a fallback
+  const API_URL = process.env.REACT_APP_API_URL || 'https://web422-project-server.vercel.app';
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
+    e.preventDefault();
+    setError('');
     try {
-      const response = await fetch('http://localhost:3001/api/auth/login', {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
-      })
-      const data = await response.json()
+      });
+      const data = await response.json();
       if (!response.ok) {
-        setError(data.error || 'Error logging in')
+        setError(data.error || 'Login failed');
       } else {
-        // Call the context login() function
-        login(data.token)
-        navigate('/') // Redirect as needed
+        login(data.token);
+        navigate('/');
       }
     } catch (err) {
-      console.error('Error logging in:', err)
-      setError(err.message)
+      setError(err.message);
     }
-  }
+  };
 
   return (
     <div className="container mt-5">
