@@ -1,20 +1,75 @@
-.random-pagination {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
+/* Swiper wrapper with fixed height to prevent layout shift */
+.random-swiper {
+    width: 100%;
+    margin: 0 auto;
+    height: 420px; /* Ensures uniform height for all slides */
+    position: relative;
+    box-sizing: border-box;
   }
   
-  .random-bullet {
+  /* Force each slide to take full height */
+  .random-swiper .swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%; /* Make each slide match swiper height */
+    box-sizing: border-box;
+    padding: 1rem;
+  }
+  
+  /* The banner container */
+  .random-recipe {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  /* Desktop: side-by-side layout */
+  @media (min-width: 768px) {
+    .random-recipe {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+  
+  /* Image styles */
+  .random-recipe img {
+    width: 300px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+  
+  /* Recipe text section */
+  .random-recipe-info {
+    border-radius: 8px;
+    overflow-y: auto;
+    max-height: 100%;
+  }
+  
+  /* Swiper bullets */
+  .swiper-pagination {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+  }
+  
+  .swiper-pagination-bullet {
     width: 12px;
     height: 12px;
     background-color: #ccc;
-    border-radius: 50%;
-    display: inline-block;
-    cursor: pointer;
+    opacity: 1;
+    margin: 0 5px;
     transition: background-color 0.3s ease;
   }
   
-  .random-bullet.active {
+  .swiper-pagination-bullet-active {
     background-color: #333;
   }
   
