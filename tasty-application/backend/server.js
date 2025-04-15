@@ -38,19 +38,7 @@ function authenticateToken(req, res, next) {
 }
 
 
-const corsOptions = {
-  origin: [
-    'http://localhost:3000',
-    'https://web422-tasty.vercel.app'
-  ],
-  credentials: true,
-  optionsSuccessStatus: 200
-};
-
-app.use(cors(corsOptions));
-
-
-
+app.use(cors()); // Allow all origins
 
 // Parse incoming JSON requests
 app.use(express.json());
