@@ -7,6 +7,8 @@ import RecipeModal from './RecipeModal'
 import '../styles/RecipeCardWithDetail.css'
 import '../styles/RecommendByUs.css'
 
+const API_URL = 'https://web422-project-server.vercel.app'
+
 const RecipeCardWithDetail = ({ recipe }) => {
   const navigate = useNavigate()
   const [recentlyViewed, setRecentlyViewed] = useAtom(recentlyViewedAtom)
@@ -15,10 +17,28 @@ const RecipeCardWithDetail = ({ recipe }) => {
   const [showModal, setShowModal] = useState(false)
   const [page, setPage] = useState(1)
 
-  // Check if the recipe is already favorited on component mount
+  // Check if recipe is already favorited by the user
   useEffect(() => {
-    const favorites = JSON.parse(localStorage.getItem('favorites')) || []
-    setIsFavorited(favorites.some((fav) => fav.id === recipe.id))
+    const checkIfFavorited = async () => {
+      const token = localStorage.getItem('token')
+      if (!token || !recipe.id) return
+
+      try {
+        const res = await fetch(`${API_URL}/api/favorites`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        const data = await res.json()
+        if (data.success) {
+          setIsFavorited(data.favorites.some((fav) => fav._id === recipe.id))
+        }
+      } catch (err) {
+        console.error('Error checking favorites:', err)
+      }
+    }
+
+    checkIfFavorited()
   }, [recipe.id])
 
   const handleMoreDetailsClick = (recipe) => {
@@ -37,36 +57,47 @@ const RecipeCardWithDetail = ({ recipe }) => {
     navigateToRecipe(navigate, recipe.id)
   }
 
-  const handleFavoriteToggle = (e) => {
-    e.stopPropagation() // Prevent triggering the card click event
+  const handleFavoriteToggle = async (e) => {
+    e.stopPropagation()
+    const token = localStorage.getItem('token')
+    if (!token || !recipe.id) return
 
-    const favorites = JSON.parse(localStorage.getItem('favorites')) || []
-    let updatedFavorites
+    try {
+      let response
 
-    if (isFavorited) {
-      // Remove the recipe from favorites
-      updatedFavorites = favorites.filter((fav) => fav.id !== recipe.id)
-    } else {
-      // Add the recipe to favorites
-      updatedFavorites = [
-        ...favorites,
-        {
-          id: recipe.id,
-          name: recipe.name,
-          thumbnail_url: recipe.thumbnail_url || 'default-image.jpg' // Handle missing thumbnail
-        }
-      ]
+      if (isFavorited) {
+        response = await fetch(`${API_URL}/api/favorites/${recipe.id}`, {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+      } else {
+        response = await fetch(`${API_URL}/api/favorites`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ recipeId: recipe.id }),
+        })
+      }
+
+      const data = await response.json()
+      if (data.success) {
+        setIsFavorited(!isFavorited)
+      } else {
+        console.error(data.error || 'Favorite update failed')
+      }
+    } catch (error) {
+      console.error('Favorite API error:', error)
     }
-
-    // Update localStorage and state
-    localStorage.setItem('favorites', JSON.stringify(updatedFavorites))
-    setIsFavorited(!isFavorited)
   }
 
   return (
     <>
       <div className="recipe-card">
-        {/* Recipe Image */}
+        {/* Image */}
         <div className="recipe-card-image" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
           {recipe.thumbnail_url ? (
             <img src={recipe.thumbnail_url} alt={recipe.name} />
@@ -75,25 +106,25 @@ const RecipeCardWithDetail = ({ recipe }) => {
           )}
         </div>
 
-        {/* Recipe Name */}
+        {/* Title */}
         <h3 className="recipe-card-title" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
           {recipe.name}
         </h3>
 
-        {/* Total Time */}
+        {/* Time */}
         <p className="recipe-card-time">
           <i className="bi bi-clock" style={{ marginRight: '5px', color: '#7F7F7F' }}></i>
           {recipe.total_time_minutes ? `${recipe.total_time_minutes} mins` : 'N/A'}
         </p>
 
-        {/* Icons Row */}
+        {/* Icons */}
         <div className="d-flex justify-content-between align-items-center mt-2">
-          {/* Favorite Icon */}
+          {/* Heart */}
           <div className="recommend-card-favorite-icon" onClick={handleFavoriteToggle}>
             <i className={`bi bi-heart${isFavorited ? '-fill' : ''}`}></i>
           </div>
 
-          {/* Info Icon */}
+          {/* Info */}
           <div
             className="more-info-icon"
             onClick={(e) => {
@@ -107,7 +138,7 @@ const RecipeCardWithDetail = ({ recipe }) => {
         </div>
       </div>
 
-      {/* Bootstrap Modal */}
+      {/* Modal */}
       {showModal && (
         <RecipeModal
           selectedRecipe={selectedRecipe}

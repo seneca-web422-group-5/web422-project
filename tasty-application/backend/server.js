@@ -61,10 +61,16 @@ mongoose
 // Define User schema and model (using the "users" collection)
 // Define User schema with a favorites field
 const UserSchema = new mongoose.Schema({
-  name: { type: String, required: true },        // New field for signup
+  name: { type: String, required: true },
   email: { type: String, required: true },
-  password: { type: String, required: true },     // Will store hashed password
-  favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Recipe' }] // Favorite recipe IDs
+  password: { type: String, required: true },
+  favorites: [
+    {
+      id: String,             // external API recipe ID (like "4111")
+      name: String,           // recipe name
+      thumbnail_url: String   // recipe image
+    }
+  ]
 });
 
 const User = mongoose.models.User || mongoose.model('User', UserSchema, 'users');
@@ -85,34 +91,38 @@ app.get('/api/test-db', async (req, res) => {
 });
 
 app.get('/api/favorites', authenticateToken, async (req, res) => {
-  console.log('Accessing /api/favorites for user:', req.user);
   try {
-    const userId = req.user.id;
-    const user = await User.findById(userId).populate('favorites');
+    const user = await User.findById(req.user.id).lean();
     if (!user) {
       return res.status(404).json({ success: false, error: 'User not found.' });
     }
+
     res.status(200).json({ success: true, favorites: user.favorites });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });
 
+
 app.post('/api/favorites', authenticateToken, async (req, res) => {
   try {
-    const { recipeId } = req.body;
-    const userId = req.user.id;
+    const { id, name, thumbnail_url } = req.body;
+    if (!id || !name) {
+      return res.status(400).json({ success: false, error: 'Missing recipe data.' });
+    }
 
-    const user = await User.findById(userId);
+    const user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ success: false, error: 'User not found.' });
     }
 
-    if (user.favorites.includes(recipeId)) {
+    // Check if already favorited
+    const alreadyFavorited = user.favorites.some(fav => fav.id === id);
+    if (alreadyFavorited) {
       return res.status(400).json({ success: false, error: 'Recipe already in favorites.' });
     }
 
-    user.favorites.push(recipeId);
+    user.favorites.push({ id, name, thumbnail_url });
     await user.save();
 
     res.status(201).json({ success: true, favorites: user.favorites });
@@ -121,17 +131,16 @@ app.post('/api/favorites', authenticateToken, async (req, res) => {
   }
 });
 
-app.delete('/api/favorites/:recipeId', authenticateToken, async (req, res) => {
-  try {
-    const { recipeId } = req.params;
-    const userId = req.user.id;
 
-    const user = await User.findById(userId);
+app.delete('/api/favorites/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ success: false, error: 'User not found.' });
     }
 
-    user.favorites = user.favorites.filter((id) => id.toString() !== recipeId);
+    user.favorites = user.favorites.filter(fav => fav.id !== id);
     await user.save();
 
     res.status(200).json({ success: true, favorites: user.favorites });
@@ -139,6 +148,7 @@ app.delete('/api/favorites/:recipeId', authenticateToken, async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
+
 
 /* 
   Signup Endpoint

@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom'
 import { getFullDetail } from '../../lib/api'
 import '../../styles/RecipePage.css'
 
+const API_URL = 'https://web422-project-server.vercel.app'
+
 const RecipePage = () => {
   const { id } = useParams()
   const [recipeDetails, setRecipeDetails] = useState(null)
@@ -10,15 +12,16 @@ const RecipePage = () => {
   const [error, setError] = useState(null)
   const [isFavorited, setIsFavorited] = useState(false)
 
+  // Fetch recipe detail
   useEffect(() => {
     const fetchRecipeDetails = async () => {
       try {
         setLoading(true)
         const data = await getFullDetail(id)
         setRecipeDetails(data)
-        setLoading(false)
       } catch (err) {
         setError('Error fetching recipe details')
+      } finally {
         setLoading(false)
       }
     }
@@ -28,28 +31,56 @@ const RecipePage = () => {
     }
   }, [id])
 
+  // Check if favorited from backend
   useEffect(() => {
-    const favorites = JSON.parse(localStorage.getItem('favorites')) || []
-    setIsFavorited(favorites.some((fav) => fav.id === Number(id)))
+    const checkFavorite = async () => {
+      const token = localStorage.getItem('token')
+      if (!token || !id) return
+
+      try {
+        const res = await fetch(`${API_URL}/api/favorites`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        const data = await res.json()
+        if (data.success) {
+          setIsFavorited(data.favorites.some((fav) => fav.id === id || fav.id === id))
+        }
+      } catch (err) {
+        console.error('Error checking favorite status:', err)
+      }
+    }
+
+    checkFavorite()
   }, [id])
 
-  const handleToggleFavorite = () => {
-    const favorites = JSON.parse(localStorage.getItem('favorites')) || []
+  const handleToggleFavorite = async () => {
+    const token = localStorage.getItem('token')
+    if (!token || !id) return
 
-    const updatedFavorites = isFavorited
-      ? favorites.filter((fav) => fav.id !== Number(id))
-      : [
-          ...favorites,
-          {
-            id: recipeDetails.id,
-            name: recipeDetails.name,
-            thumbnail_url: recipeDetails.thumbnail_url || recipeDetails.picture_url || ''
-          }
-        ]
+    try {
+      const endpoint = `${API_URL}/api/favorites${isFavorited ? `/${id}` : ''}`
+      const method = isFavorited ? 'DELETE' : 'POST'
+      const body = isFavorited ? null : JSON.stringify({ recipeId: id })
 
-    localStorage.setItem('favorites', JSON.stringify(updatedFavorites))
-    setIsFavorited(!isFavorited)
-    window.dispatchEvent(new Event('favoriteChanged'))
+      const res = await fetch(endpoint, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        ...(body && { body }),
+      })
+
+      const data = await res.json()
+      if (data.success) {
+        setIsFavorited(!isFavorited)
+        window.dispatchEvent(new Event('favoriteChanged'))
+      } else {
+        console.error(data.error || 'Favorite update failed')
+      }
+    } catch (err) {
+      console.error('Error toggling favorite:', err)
+    }
   }
 
   if (loading) return <div>Loading...</div>
@@ -59,7 +90,6 @@ const RecipePage = () => {
     <div className="recipe-page-container">
       {recipeDetails ? (
         <>
-          {/* Recipe Header */}
           <div className="recipe-header">
             <h1 className="recipe-title">{recipeDetails.name || 'No name available'}</h1>
             <button
@@ -70,7 +100,6 @@ const RecipePage = () => {
             </button>
           </div>
 
-          {/* Recipe Image */}
           <div className="recipe-image-container">
             <img
               src={recipeDetails.thumbnail_url || 'default-image.jpg'}
@@ -79,12 +108,10 @@ const RecipePage = () => {
             />
           </div>
 
-          {/* Recipe Description */}
           <p className="recipe-description">
             {recipeDetails.description || 'No description available'}
           </p>
 
-          {/* Recipe Metadata */}
           <div className="recipe-metadata">
             <div>
               <strong>Prep Time:</strong> {recipeDetails.prep_time_minutes || 'N/A'} minutes
@@ -97,12 +124,11 @@ const RecipePage = () => {
             </div>
           </div>
 
-          {/* Recipe Ingredients and Instructions */}
           <div className="recipe-details">
             <div className="recipe-ingredients">
               <h3>Ingredients</h3>
               <ul>
-                {recipeDetails.ingredients && recipeDetails.ingredients.length > 0 ? (
+                {recipeDetails.ingredients?.length ? (
                   recipeDetails.ingredients.map((ingredient, index) => (
                     <li key={index}>{ingredient}</li>
                   ))
@@ -111,12 +137,13 @@ const RecipePage = () => {
                 )}
               </ul>
             </div>
+
             <div className="recipe-instructions">
               <h3>Instructions</h3>
               <ol>
-                {recipeDetails.instructions && recipeDetails.instructions.length > 0 ? (
-                  recipeDetails.instructions.map((instruction) => (
-                    <li key={instruction.id}>{instruction.display_text}</li>
+                {recipeDetails.instructions?.length ? (
+                  recipeDetails.instructions.map((step) => (
+                    <li key={step.id}>{step.display_text}</li>
                   ))
                 ) : (
                   <li>No instructions available</li>
