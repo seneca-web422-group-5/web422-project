@@ -38,21 +38,17 @@ function authenticateToken(req, res, next) {
 }
 
 
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://web422-tasty.vercel.app'
-]
+const corsOptions = {
+  origin: [
+    'http://localhost:3000',
+    'https://web422-tasty.vercel.app'
+  ],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  },
-  credentials: true
-}))
+app.use(cors(corsOptions));
+
 
 
 
