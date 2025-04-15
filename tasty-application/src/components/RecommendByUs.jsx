@@ -11,7 +11,7 @@ const RecommendByUs = ({ recommendations = [] }) => {
   const [recentlyViewed, setRecentlyViewed] = useAtom(recentlyViewedAtom)
   const [selectedRecipe, setSelectedRecipe] = useState(null)
   const [showModal, setShowModal] = useState(false)
-  const [page, setPage] = useState(1) // track the current page in the modal
+  const [page, setPage] = useState(1)
 
   const handleMoreDetailsClick = (recipe) => {
     setSelectedRecipe(recipe)
@@ -47,6 +47,7 @@ const RecommendByUs = ({ recommendations = [] }) => {
                 <div className="recommend-card-no-image">No Image</div>
               )}
             </div>
+
             {/* rating */}
             {item.user_ratings && item.user_ratings.score ? (
               <div>
@@ -58,15 +59,18 @@ const RecommendByUs = ({ recommendations = [] }) => {
             ) : (
               <p className="recommend-card-no-rating">No Ratings</p>
             )}
+
             {/* recipe name */}
             <h3 className="recommend-card-title" onClick={() => handleCardClick(item)}>
               {item.name}
             </h3>
+
             {/* author */}
-            <p className="recommend-card-author">by {item.author}</p>
+            <p className="recommend-card-author">by {item.author || 'Unknown'}</p>
+
             {/* tags */}
             <div className="recommend-card-tags">
-              {item.tags.length > 0 ? (
+              {Array.isArray(item.tags) && item.tags.length > 0 ? (
                 item.tags.slice(0, 5).map((tag, index) => (
                   <span key={`${item.id}-${tag}-${index}`} className="recommend-card-tag">
                     {tag}
@@ -76,6 +80,7 @@ const RecommendByUs = ({ recommendations = [] }) => {
                 <span className="recommend-card-tag">No Tags</span>
               )}
             </div>
+
             {/* info icon */}
             <div
               className="more-info-icon d-flex justify-content-end"
@@ -87,7 +92,7 @@ const RecommendByUs = ({ recommendations = [] }) => {
         ))}
       </div>
 
-      {/* Bootstrap Modal */}
+      {/* Modal */}
       {showModal && (
         <RecipeModal
           selectedRecipe={selectedRecipe}
