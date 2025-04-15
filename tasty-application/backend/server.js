@@ -181,6 +181,72 @@ app.get('/api/category-images', async (req, res) => {
 
 
 
+// ------------------Random-Recipe Schema------------------
+const RecipeSchema = new mongoose.Schema({
+  id: { type: Number, required: true, unique: true },
+  name: String,
+  description: String,
+  thumbnail_url: String,
+  created_at: Number,
+}, { timestamps: true })
+
+const Recipe = mongoose.models.Recipe || mongoose.model('Recipe', RecipeSchema, 'randomRecipes')
+
+
+app.post('/api/seed-random-recipes', async (req, res) => {
+  const apiKey = process.env.RAPID_API_KEY;
+  if (!apiKey) return res.status(500).json({ success: false, error: 'Missing RAPID_API_KEY' });
+
+  try {
+    const searchRes = await fetch(
+      'https://tasty.p.rapidapi.com/recipes/list?from=0&size=50',
+      {
+        headers: {
+          'X-RapidAPI-Key': apiKey,
+          'X-RapidAPI-Host': 'tasty.p.rapidapi.com',
+        },
+      }
+    );
+
+    const data = await searchRes.json();
+    const validRecipes = (data.results || []).filter(r => r.thumbnail_url && r.name);
+
+    const random5 = validRecipes.sort(() => 0.5 - Math.random()).slice(0, 5);
+
+    const saved = [];
+
+    for (const recipe of random5) {
+      const exists = await Recipe.findOne({ id: recipe.id });
+      if (!exists) {
+        const doc = await Recipe.create({
+          id: recipe.id,
+          name: recipe.name,
+          description: recipe.description || '',
+          thumbnail_url: recipe.thumbnail_url,
+          created_at: recipe.created_at,
+        });
+        saved.push(doc);
+      }
+    }
+
+    res.status(200).json({ success: true, count: saved.length, data: saved });
+  } catch (err) {
+    console.error('Error seeding random recipes:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ------------------ Random Recipes Endpoint ------------------
+app.get('/api/random-recipes', async (req, res) => {
+  try {
+    const recipes = await Recipe.find({}).lean();
+    res.status(200).json({ success: true, count: recipes.length, data: recipes });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+
 
 // ------------------ Favorite-Related Endpoints ------------------
 app.get('/api/favorites', authenticateToken, async (req, res) => {
