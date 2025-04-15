@@ -40,6 +40,7 @@ const Signup = () => {
       setError(err.message);
     }
   };
+  
   return (
     <div className="container mt-5">
       <h1 className="text-center mb-4">Signup</h1>
