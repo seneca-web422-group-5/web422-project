@@ -21,7 +21,7 @@ const Categories = () => {
 
         const [tagsRes, imageResRaw] = await Promise.all([
           getCachedData('tags', () => api.getTags()),
-          fetch('/api/category-images')
+          fetch(`${process.env.REACT_APP_API_URL}/api/category-images`)
         ])
 
         if (!imageResRaw.ok) {
