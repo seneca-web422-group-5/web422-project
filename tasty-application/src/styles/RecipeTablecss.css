@@ -1,0 +1,80 @@
+.recipe-table-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  /* Table row styling */
+  table.display tbody tr {
+    height: 50px; /* Increased row height */
+  }
+  
+  /* Recipe name cell styling */
+  table.display td:nth-child(2) {
+    padding-left: 15px;
+    font-weight: 500;
+  }
+  
+  /* Star rating styling */
+  .star-rating {
+    color: gold;
+    font-size: 1.2em;
+    display: inline-block;
+    min-width: 100px;
+  }
+  
+  /* Action buttons container */
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+  }
+  
+  /* Button styling */
+  button {
+    margin: 0;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 0.9em;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+  }
+  
+  .btn-edit {
+    background: #4CAF50;
+    color: white;
+  }
+  
+  .btn-edit:hover {
+    background: #3e8e41;
+  }
+  
+  .btn-delete {
+    background: #f44336;
+    color: white;
+  }
+  
+  .btn-delete:hover {
+    background: #d32f2f;
+  }
+  
+  /* Header styling */
+  table.display thead th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    padding: 12px 15px;
+  }
+  
+  /* Pagination styling */
+  .dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 6px 12px;
+    margin: 0 3px;
+    border-radius: 4px;
+  }
+  
+  .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: #4CAF50;
+    color: white !important;
+    border: 1px solid #4CAF50;
+  }
+  
