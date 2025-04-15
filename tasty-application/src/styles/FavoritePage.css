@@ -5,8 +5,8 @@
   
   .favorites-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 2fr));
+    gap: 40px;
     justify-content: center;
     padding: 20px;
     background-color: #f8f9fa;
@@ -50,3 +50,4 @@
     margin-top: 10px;
   }
   
+
