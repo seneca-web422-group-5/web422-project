@@ -1,6 +1,7 @@
-import "../styles/CategoryPage.css"
+// CategoryCard.jsx
+import "../styles/CategoryPage.css";
 
-const CategoryCard = ({ category }) => {
+const CategoryCard = ({ category, imageUrl }) => {
   return (
     <div className="general-category-card">
       <img
@@ -8,7 +9,7 @@ const CategoryCard = ({ category }) => {
         alt={category.display_name}
         className="general-category-image"
       />
-      <p className="genereal-category-name">{category.display_name}</p>
+      <p className="general-category-name">{category.display_name}</p>
     </div>
   );
 };

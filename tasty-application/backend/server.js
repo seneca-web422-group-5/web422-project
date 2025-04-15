@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const app = express();
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 4000;
 const MONGODB_URI = process.env.MONGODB_URI;
 const JWT_SECRET = process.env.JWT_SECRET;
 // API_URL is not used on the backend
@@ -38,7 +38,8 @@ function authenticateToken(req, res, next) {
 }
 
 // Enable CORS (allow access from any domain)
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:3000' }));
+
 
 // Parse incoming JSON requests
 app.use(express.json());
@@ -95,9 +96,90 @@ app.get('/api/test-db', async (req, res) => {
 });
 
 
+// ------------------Category-Images Schema------------------
+const CategoryImageSchema = new mongoose.Schema({
+  categoryId: { type: String, required: true, unique: true },
+  category: { type: String, required: true },
+  imageUrl: { type: String, required: true },
+}, { timestamps: true });
+
+const CategoryImage = mongoose.models.CategoryImage || mongoose.model('CategoryImage', CategoryImageSchema, 'CategoryImages');
+
+// ------------------ Seeding to get Category-Images on the back end ------------------
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+
+app.post('/api/seed-category-images', async (req, res) => {
+  const apiKey = process.env.RAPID_API_KEY;
+  if (!apiKey) return res.status(500).json({ success: false, error: 'Missing RAPID_API_KEY' });
+
+  try {
+    const tagsRes = await fetch('https://tasty.p.rapidapi.com/tags/list', {
+      headers: {
+        'X-RapidAPI-Key': apiKey,
+        'X-RapidAPI-Host': 'tasty.p.rapidapi.com',
+      },
+    });
+    const tagData = await tagsRes.json();
+    const tagResults = tagData?.results;
+
+    if (!Array.isArray(tagResults)) {
+      return res.status(500).json({ success: false, error: 'Invalid tag data from API' });
+    }
+
+    const savedImages = [];
+
+    const normalize = (str) =>
+      str?.toLowerCase().replace(/[\s\-]+/g, '_').replace(/[^a-z0-9_]/g, '');
+
+    for (const category of tagResults) {
+      const normalizedId = normalize(category.name);
+      const existing = await CategoryImage.findOne({ categoryId: normalizedId });
+      if (existing) continue;
+
+      const searchRes = await fetch(
+        `https://tasty.p.rapidapi.com/recipes/list?from=0&size=10&tags=${category.display_name}`,
+        {
+          headers: {
+            'X-RapidAPI-Key': apiKey,
+            'X-RapidAPI-Host': 'tasty.p.rapidapi.com',
+          },
+        }
+      );
+      const recipeData = await searchRes.json();
+      const recipes = recipeData?.results || [];
+      if (!recipes.length) continue;
+
+      const found = recipes.find((r) => r.thumbnail_url);
+      if (found?.thumbnail_url) {
+        const saved = await CategoryImage.create({
+          categoryId: normalizedId,
+          category: category.display_name,
+          imageUrl: found.thumbnail_url,
+        });
+        savedImages.push(saved);
+      }
+
+      await new Promise((res) => setTimeout(res, 200));
+    }
+
+    res.status(200).json({ success: true, count: savedImages.length, data: savedImages });
+  } catch (error) {
+    console.error('Seeder error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // ------------------ Category-Images Endpoint ------------------
-const categoryImageRoutes = require('./routes/categoryImages')
-app.use('/api/category-images', categoryImageRoutes)
+app.get('/api/category-images', async (req, res) => {
+  try {
+    const images = await CategoryImage.find({}).lean();
+    res.status(200).json({ success: true, data: images });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+
 
 
 // ------------------ Favorite-Related Endpoints ------------------
@@ -150,6 +232,8 @@ app.delete('/api/favorites/:id', authenticateToken, async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
+
+
 
 // ------------------ Profile-Related Endpoints ------------------
 

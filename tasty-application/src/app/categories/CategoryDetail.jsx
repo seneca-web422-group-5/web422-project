@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import api from '../../lib/api'
-import Pagination from '../../components/Pagination'
+import SmallPagination from '../../components/SmallPagination'
 import RecipeCardWithDetail from '../../components/RecipeCardWithDetail'
 import Sort from '../../components/Sort'
 
@@ -123,7 +123,7 @@ const CategoryDetailPage = () => {
         ))}
       </div>
 
-      <Pagination
+      <SmallPagination
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}
