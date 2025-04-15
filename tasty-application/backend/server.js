@@ -12,6 +12,8 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const MONGODB_URI = process.env.MONGODB_URI;
 const JWT_SECRET = process.env.JWT_SECRET;
+// API_URL is not used on the backend
+// const API_URL = process.env.REACT_APP_API_URL;
 
 if (!MONGODB_URI) {
   throw new Error('Please define MONGODB_URI in your environment.');
@@ -20,18 +22,36 @@ if (!JWT_SECRET) {
   throw new Error('Please define JWT_SECRET in your environment.');
 }
 
-// Enable CORS (allow any domain)
+// JWT Authentication Middleware
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ success: false, error: 'Token missing' });
+  }
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({ success: false, error: 'Invalid token' });
+    }
+    req.user = user;
+    next();
+  });
+}
+
+// Enable CORS (allow access from any domain)
 app.use(cors());
 
 // Parse incoming JSON requests
 app.use(express.json());
 
-// Connect to MongoDB with slightly increased timeout
+// Connect to MongoDB with a longer timeout for serverless environments
 mongoose
   .connect(MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 10000
+    serverSelectionTimeoutMS: 10000,
   })
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => {
@@ -39,26 +59,35 @@ mongoose
     process.exit(1);
   });
 
-// Updated User schema for the "users" collection
+// Define User schema and model (collection: "users")
+// New schema includes bio, title, location, instagram, and lastLogin.
+// Timestamps option automatically adds createdAt and updatedAt.
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
-  password: { type: String, required: true }, // Stored as a bcrypt hash
+  password: { type: String, required: true },
   bio: { type: String, default: "" },
   title: { type: String, default: "" },
   location: { type: String, default: "" },
   instagram: { type: String, default: "" },
-  lastLogin: { type: Date } // We'll update this on each successful login
-}, { timestamps: true });  // Automatically creates createdAt and updatedAt fields
+  favorites: [
+    {
+      id: String,
+      name: String,
+      thumbnail_url: String,
+    },
+  ],
+  lastLogin: { type: Date },
+}, { timestamps: true });
 
 const User = mongoose.models.User || mongoose.model('User', UserSchema, 'users');
 
-// Optional: Root route for quick verification
+// Root route for quick verification
 app.get('/', (req, res) => {
   res.send('Express API is running.');
 });
 
-// Test endpoint to fetch all users
+// Test endpoint: fetch all users (for debugging)
 app.get('/api/test-db', async (req, res) => {
   try {
     const users = await User.find({}).lean();
@@ -68,7 +97,117 @@ app.get('/api/test-db', async (req, res) => {
   }
 });
 
-// Signup endpoint: creates a new user with hashed password
+// Favorites endpoints
+app.get('/api/favorites', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).lean();
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found.' });
+    }
+    res.status(200).json({ success: true, favorites: user.favorites });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/favorites', authenticateToken, async (req, res) => {
+  try {
+    const { id, name, thumbnail_url } = req.body;
+    if (!id || !name) {
+      return res.status(400).json({ success: false, error: 'Missing recipe data.' });
+    }
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found.' });
+    }
+    // Check if already favorited
+    const alreadyFavorited = user.favorites.some(fav => fav.id === id);
+    if (alreadyFavorited) {
+      return res.status(400).json({ success: false, error: 'Recipe already in favorites.' });
+    }
+    user.favorites.push({ id, name, thumbnail_url });
+    await user.save();
+    res.status(201).json({ success: true, favorites: user.favorites });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.delete('/api/favorites/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found.' });
+    }
+    user.favorites = user.favorites.filter(fav => fav.id !== id);
+    await user.save();
+    res.status(200).json({ success: true, favorites: user.favorites });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ------------------ Profile-Related Endpoints ------------------
+
+// GET /api/auth/profile - Return the profile data for the authenticated user
+app.get('/api/auth/profile', authenticateToken, async (req, res) => {
+  try {
+    let user = await User.findById(req.user.id).lean();
+    if (!user) return res.status(404).json({ success: false, error: 'User not found.' });
+    delete user.password;
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// PUT /api/auth/update-profile - Update personal info
+app.put('/api/auth/update-profile', authenticateToken, async (req, res) => {
+  const { name, bio, title, location, instagram } = req.body;
+  try {
+    let user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ success: false, error: 'User not found.' });
+    
+    if (name !== undefined) user.name = name;
+    if (bio !== undefined) user.bio = bio;
+    if (title !== undefined) user.title = title;
+    if (location !== undefined) user.location = location;
+    if (instagram !== undefined) user.instagram = instagram;
+    
+    await user.save();
+    res.status(200).json({ success: true, message: 'Profile updated successfully.' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// PUT /api/auth/change-password - Change password (requires old password)
+app.put('/api/auth/change-password', authenticateToken, async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  if (!oldPassword || !newPassword) {
+    return res.status(400).json({ success: false, error: "Both old and new passwords are required." });
+  }
+  try {
+    let user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ success: false, error: 'User not found.' });
+    
+    const passwordMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!passwordMatch) {
+      return res.status(401).json({ success: false, error: "Old password is incorrect." });
+    }
+    
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+    res.status(200).json({ success: true, message: "Password updated successfully." });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ------------------ Authentication Endpoints ------------------
+
+// Signup Endpoint
 app.post('/api/auth/signup', async (req, res) => {
   const { name, email, password } = req.body;
   
@@ -82,16 +221,11 @@ app.post('/api/auth/signup', async (req, res) => {
       return res.status(400).json({ success: false, error: "User already exists." });
     }
     
-    // Hash the password (10 salt rounds)
     const hashedPassword = await bcrypt.hash(password, 10);
-    
-    // Create a new user
     const newUser = new User({ name, email, password: hashedPassword });
     await newUser.save();
     
-    // Optionally, generate a token for auto-login (or you can simply return a success response)
     const token = jwt.sign({ id: newUser._id, email: newUser.email }, JWT_SECRET, { expiresIn: '1h' });
-    
     return res.status(201).json({ success: true, token });
   } catch (error) {
     console.error('Error during signup:', error);
@@ -99,7 +233,7 @@ app.post('/api/auth/signup', async (req, res) => {
   }
 });
 
-// Login endpoint: verifies user credentials, updates lastLogin, and returns a JWT token
+// Login Endpoint
 app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
   
@@ -113,13 +247,12 @@ app.post('/api/auth/login', async (req, res) => {
       return res.status(401).json({ success: false, error: "Invalid credentials." });
     }
     
-    // Compare the provided password with the stored hashed password
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
       return res.status(401).json({ success: false, error: "Invalid credentials." });
     }
     
-    // Update lastLogin for the user (do not include lean() here, so we can save the change)
+    // Update lastLogin field
     await User.updateOne({ _id: user._id }, { $set: { lastLogin: new Date() } });
     
     const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, { expiresIn: '1h' });
@@ -129,8 +262,7 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-// Additional endpoints for favorites, etc. remain unchanged...
-
+// Start the Express server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
