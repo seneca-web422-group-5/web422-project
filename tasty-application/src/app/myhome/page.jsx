@@ -1,6 +1,7 @@
 import React from 'react'
 import RecentlySearch from '../../components/RecentlySearch'
 import RecentlyView from '../../components/RecentlyView'
+import RecipeTable from '../../components/RecipeTable'
 
 const Myhome = () => {
   return (
@@ -11,6 +12,7 @@ const Myhome = () => {
       </div>
       <hr />
       <RecentlyView />
+      <RecipeTable />
     </div>
   )
 }
