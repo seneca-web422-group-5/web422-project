@@ -82,7 +82,9 @@ const Categories = () => {
 
   if (loading) return <div>Loading...</div>
   if (error) return <div>{error}</div>
-
+  const normalize = (str) =>
+    str?.toLowerCase().replace(/[\s\-]+/g, '_').replace(/[^a-z0-9_]/g, '');
+  
   return (
     <>
       <div className="container">
@@ -90,7 +92,7 @@ const Categories = () => {
         <hr />
         <div className="categories-grid">
           {currentCategories.map((category) => (
-            <Link key={category.name} to={`/categories/${category.display_name}`}>
+           <Link key={category.name} to={`/categories/${normalize(category.display_name)}`}>
               <CategoryCard category={category} />
             </Link>
           ))}
