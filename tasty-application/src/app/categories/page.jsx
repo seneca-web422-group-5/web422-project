@@ -16,6 +16,8 @@ const Categories = () => {
 
   useEffect(() => {
     const fetchCategories = async () => {
+      console.log("REACT_APP_API_URL:", process.env.REACT_APP_API_URL)
+  
       try {
         setLoading(true)
   
