@@ -1,3 +1,4 @@
+// src/components/Login.jsx
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
@@ -8,6 +9,9 @@ const Login = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  // Use the environment variable, with a fallback if not set
+  const API_URL = process.env.REACT_APP_API_URL || 'https://web422-project-server.vercel.app';
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -17,7 +21,7 @@ const Login = () => {
     e.preventDefault();
     setError('');
     try {
-      const response = await fetch('http://localhost:3001/api/auth/login', {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
