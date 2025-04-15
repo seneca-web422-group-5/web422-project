@@ -1,4 +1,4 @@
-// src/components/TestDatabaseClient.jsx
+// Example: src/components/TestDatabaseClient.jsx
 import React, { useEffect, useState } from 'react';
 
 const TestDatabaseClient = () => {
@@ -6,40 +6,39 @@ const TestDatabaseClient = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const API_URL = process.env.REACT_APP_API_URL || 'https://web422-project-server.vercel.app';
+
   useEffect(() => {
-    fetch('http://localhost:3001/api/test-db')
-      .then((res) => {
+    fetch(`${API_URL}/api/test-db`)
+      .then(res => {
         if (!res.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error('Failed to fetch');
         }
         return res.json();
       })
-      .then((result) => {
-        if (result.success) {
-          setUsers(result.data);
+      .then(data => {
+        if (data.success) {
+          setUsers(data.data);
         } else {
-          setError(result.error);
+          setError(data.error);
         }
         setLoading(false);
       })
-      .catch((err) => {
-        console.error('Error fetching data:', err);
+      .catch(err => {
         setError(err.message);
         setLoading(false);
       });
-  }, []);
+  }, [API_URL]);
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (error) return <p className="text-danger">{error}</p>;
 
   return (
     <div>
-      <h2>Users from Database</h2>
-      {users.length > 0 ? (
+      <h2>Test Database Data</h2>
+      {users.length ? (
         <ul>
-          {users.map((user) => (
-            <li key={user._id}>{user.email}</li>
-          ))}
+          {users.map(user => <li key={user._id}>{user.email}</li>)}
         </ul>
       ) : (
         <p>No users found.</p>
