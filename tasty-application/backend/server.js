@@ -1,12 +1,9 @@
-// backend/server.js
-
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
 const app = express();
 
 const PORT = process.env.PORT || 3001;
@@ -59,6 +56,17 @@ mongoose
     process.exit(1);
   });
 
+// Category Schema for stroring category images
+const CategoryImageSchema = new mongoose.Schema({
+  categoryId: { type: String, required: true, unique: true }, // e.g., "42"
+  category: { type: String, required: true },                 // e.g., "Breakfast"
+  imageUrl: { type: String, required: true },                 // CDN or static path
+}, { timestamps: true });                                     // createdAt, updatedAt
+
+const CategoryImage = mongoose.models.CategoryImage || mongoose.model('CategoryImage', CategoryImageSchema, 'categoryImages');
+
+export default CategoryImage;
+
 // Define User schema and model (collection: "users")
 // New schema includes bio, title, location, instagram, and lastLogin.
 // Timestamps option automatically adds createdAt and updatedAt.
@@ -97,7 +105,9 @@ app.get('/api/test-db', async (req, res) => {
   }
 });
 
-// Favorites endpoints
+
+
+// ------------------ Favorite-Related Endpoints ------------------
 app.get('/api/favorites', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).lean();
