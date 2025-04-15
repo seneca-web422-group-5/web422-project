@@ -37,9 +37,11 @@
   transform: scale(1.05);
 }
 
-.category-name {
+.general-category-name {
   font-weight: 600;
   font-size: 1rem;
   text-transform: capitalize;
+  text-decoration: none;
+  color: inherit;
 }
 
