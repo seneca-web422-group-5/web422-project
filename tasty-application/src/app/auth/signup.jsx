@@ -10,7 +10,7 @@ const Signup = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Use the API URL from the environment variable
+  // Use the API URL from an environment variable (ensure this is set in your client)
   const API_URL = process.env.REACT_APP_API_URL || 'https://web422-project-server.vercel.app';
 
   const handleChange = (e) => {
@@ -33,15 +33,13 @@ const Signup = () => {
       if (!response.ok) {
         setError(data.error || 'Signup failed');
       } else {
-        // Optionally, auto-login or show a success message,
-        // For now, navigate to the login page after a successful signup:
+        // Upon successful signup, navigate to login page
         navigate('/auth/login');
       }
     } catch (err) {
       setError(err.message);
     }
   };
-
   return (
     <div className="container mt-5">
       <h1 className="text-center mb-4">Signup</h1>

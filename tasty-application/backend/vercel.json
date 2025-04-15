@@ -4,7 +4,9 @@
     {
       "src": "server.js",
       "use": "@vercel/node",
-      "config": { "regions": ["iad"] }
+      "config": {
+        "regions": ["iad"]
+      }
     }
   ],
   "routes": [
