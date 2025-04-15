@@ -6,22 +6,37 @@ import PopularCategory from '../components/PopularCategory'
 import RecommendByUs from '../components/RecommendByUs'
 import LatestRecipes from '../components/LatestRecipes'
 import DiscoverMenu from '../components/DiscoverMenu'
+import HomePagecss from '../styles/HomePagecss.css';
+
+// ⬇️ Add this new helper
+const fetchRandomRecipes = async () => {
+  const res = await fetch('http://localhost:4000/api/random-recipes')
+  const data = await res.json()
+  return data?.data || []
+}
 
 const Homepage = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [categories, setCategories] = useState([])
-  const [randomRecipe, setRandomRecipe] = useState(null)
   const [recommendations, setRecommendations] = useState([])
   const [latestRecipes, setLatestRecipes] = useState([])
+  const [randomRecipes, setRandomRecipes] = useState([])
+  const [currentRecipeIndex, setCurrentRecipeIndex] = useState(0)
   const [from, setFrom] = useState(0)
   const [hasMore, setHasMore] = useState(true)
+
   const navigate = useNavigate()
 
   const handleRecipeClick = () => {
-    if (randomRecipe && randomRecipe.id) {
-      navigate(`/recipe/${randomRecipe.id}`)
+    const recipe = randomRecipes[currentRecipeIndex]
+    if (recipe && recipe.id) {
+      navigate(`/recipe/${recipe.id}`)
     }
+  }
+
+  const handleLoadMore = () => {
+    fetchLatestRecipes(true)
   }
 
   const fetchLatestRecipes = async (append = false) => {
@@ -38,12 +53,9 @@ const Homepage = () => {
             created_at: recipe.created_at
           }))
 
-        // Append or replace recipes
-        setLatestRecipes((prevRecipes) => (append ? [...prevRecipes, ...newRecipes] : newRecipes))
-
-        // Update pagination state
-        setFrom((prevFrom) => prevFrom + 10) // Increment `from` by 20
-        setHasMore(newRecipes.length > 0) // If no new recipes, stop loading more
+        setLatestRecipes((prev) => (append ? [...prev, ...newRecipes] : newRecipes))
+        setFrom((prev) => prev + 10)
+        setHasMore(newRecipes.length > 0)
       }
     } catch (err) {
       console.error('Error fetching latest recipes:', err)
@@ -51,151 +63,56 @@ const Homepage = () => {
     }
   }
 
-  const handleLoadMore = () => {
-    fetchLatestRecipes(true) // Fetch more recipes and append
-  }
-
-  // MARKME: Entry point for the component
   useEffect(() => {
-    const fetchRandomRecipe = async () => {
-      // Check if randomRecipe is already in localStorage
-      const cachedRandomRecipe = localStorage.getItem('randomRecipe')
-      if (cachedRandomRecipe) {
-        try {
-          const { data, timestamp } = JSON.parse(cachedRandomRecipe)
-          const isExpired = Date.now() - timestamp > 86400000 // 1 day in milliseconds
-          if (!isExpired) {
-            setRandomRecipe(data)
-            return
-          }
-        } catch (e) {
-          console.error('Failed to parse cached randomRecipe:', e)
-        }
-      }
-
-      // Fetch a new random recipe from the API
+    const fetchAll = async () => {
       try {
-        const feedData = await getFeeds(5, '+0700', false)
-        if (feedData && feedData.results && feedData.results.length > 0) {
-          const recipeItems = feedData.results.filter((item) => item.type === 'featured')
-          if (recipeItems.length > 0) {
-            const newRandomRecipe = recipeItems[0].item
-            setRandomRecipe(newRandomRecipe)
-
-            // Save to localStorage with a timestamp
-            localStorage.setItem(
-              'randomRecipe',
-              JSON.stringify({ data: newRandomRecipe, timestamp: Date.now() })
-            )
-          } else {
-            console.warn('No recipe items found in the feed.')
-          }
-        }
-      } catch (err) {
-        console.error('Error fetching randomRecipe:', err)
-        setError('Failed to fetch random recipe.')
-      }
-    }
-
-    const fetchRecommendations = async () => {
-      try {
-        const cachedRecommendations = localStorage.getItem('recommendations')
-        if (cachedRecommendations) {
-          const { data, timestamp } = JSON.parse(cachedRecommendations)
-          const isExpired = Date.now() - timestamp > 86400000 // 1 day in milliseconds
-          if (!isExpired) {
-            setRecommendations(data)
-            return
-          }
-        }
-
-        const data = await getFeeds(3, '+0700', 0)
-        if (data && data.results) {
-          const popularRecipesCarousel = data.results.find(
-            (result) => result.type === 'carousel' && result.name === 'Popular Recipes This Week'
-          )
-          const mappedRecommendations =
-            popularRecipesCarousel?.items?.map((item) => ({
-              id: item?.id,
-              name: item?.name,
-              thumbnail_url: item?.thumbnail_url,
-              author: item?.credits?.[0]?.name || 'Unknown Author',
-              tags: item?.tags?.map((tag) => tag.display_name) || [],
-              user_ratings: item?.user_ratings || null,
-              description: item?.description || 'No description available.',
-              video_url: item?.video_url || null,
-              instructions: item?.instructions || [],
-              prep_time_minutes: item?.prep_time_minutes || null,
-              cook_time_minutes: item?.cook_time_minutes || null,
-              total_time_minutes: item?.total_time_minutes || null,
-              servings: item?.servings || null,
-              nutrition: item?.nutrition || null,
-              created_at: item?.created_at || null
-            })) || []
-
-          localStorage.setItem(
-            'recommendations',
-            JSON.stringify({ data: mappedRecommendations, timestamp: Date.now() })
-          )
-          setRecommendations(mappedRecommendations)
-        }
-      } catch (err) {
-        console.error('Error fetching recommendations:', err)
-        setError('Failed to fetch recommendations.')
-      }
-    }
-
-    const fetchCategories = async () => {
-      try {
-        const cachedCategories = localStorage.getItem('categories')
-        if (cachedCategories) {
-          const { data, timestamp } = JSON.parse(cachedCategories)
-          const isExpired = Date.now() - timestamp > 86400000 // 1 day in milliseconds
-          if (!isExpired) {
-            setCategories(data)
-            return
-          }
-        }
-
-        const data = await getPopularCategories()
-        if (data && data.results) {
-          const popularCategories = data.results
+        setLoading(true)
+        const [rand, cats, recs] = await Promise.all([
+          fetchRandomRecipes(),
+          getPopularCategories(),
+          getFeeds(3, '+0700', 0)
+        ])
+        setRandomRecipes(rand)
+        setCategories(
+          cats.results
             .filter((tag) => tag.type === 'meal')
             .map((tag) => ({ name: tag.display_name }))
-
-          localStorage.setItem(
-            'categories',
-            JSON.stringify({ data: popularCategories, timestamp: Date.now() })
-          )
-          setCategories(popularCategories)
-        }
+        )
+        const popular = recs.results.find((r) => r.type === 'carousel')
+        const mapped = popular?.items?.map((item) => ({
+          id: item.id,
+          name: item.name,
+          thumbnail_url: item.thumbnail_url,
+          description: item.description || 'No description',
+          user_ratings: item.user_ratings || null
+        })) || []
+        setRecommendations(mapped)
+        await fetchLatestRecipes()
       } catch (err) {
-        console.error('Failed to fetch categories:', err)
-        setError('Failed to fetch categories.')
+        console.error(err)
+        setError('Failed to load content.')
+      } finally {
+        setLoading(false)
       }
     }
 
-    const fetchCriticalData = async () => {
-      setLoading(true)
-      await Promise.all([fetchRandomRecipe()])
-      setLoading(false)
-    }
-
-    const fetchNonCriticalData = async () => {
-      await Promise.all([fetchRecommendations(), fetchCategories(), fetchLatestRecipes()])
-    }
-
-    fetchCriticalData()
-    fetchNonCriticalData()
+    fetchAll()
   }, [])
 
-  if (loading) {
-    return <div>Loading...</div>
-  }
 
-  if (error) {
-    return <div>{error}</div>
-  }
+  useEffect(() => {
+    if (randomRecipes.length > 0) {
+      const interval = setInterval(() => {
+        setCurrentRecipeIndex((prev) => (prev + 1) % randomRecipes.length)
+      }, 50000)
+      return () => clearInterval(interval)
+    }
+  }, [randomRecipes])
+
+  if (loading) return <div>Loading...</div>
+  if (error) return <div>{error}</div>
+
+  const randomRecipe = randomRecipes[currentRecipeIndex]
 
   return (
     <div>
@@ -216,10 +133,24 @@ const Homepage = () => {
           <div>
             <h2 className="mb-5">Try this amazing recipe!</h2>
             <h2 className="display-6">{randomRecipe.name}</h2>
-            <p className="text-muted">{randomRecipe.description || 'Try this amazing recipe!'}</p>
+            <p className="text-muted">
+              {randomRecipe.description || 'Try this amazing recipe!'}
+            </p>
           </div>
         </div>
       )}
+
+<div className="random-pagination text-center mb-4">
+  {randomRecipes.map((_, index) => (
+    <span
+      key={index}
+      className={`random-bullet ${index === currentRecipeIndex ? 'active' : ''}`}
+      onClick={() => setCurrentRecipeIndex(index)}
+    />
+  ))}
+</div>
+
+
       <DiscoverMenu recipeId={randomRecipe?.id} />
       <PopularCategory categories={categories} />
       <JoinUs />
