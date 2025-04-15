@@ -205,6 +205,16 @@ app.put('/api/auth/change-password', authenticateToken, async (req, res) => {
   }
 });
 
+app.get('/api/auth/community', async (req, res) => {
+  try {
+    // Exclude password and __v fields from each document
+    const users = await User.find({}, { password: 0, __v: 0 }).lean();
+    res.status(200).json({ success: true, data: users });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // ------------------ Authentication Endpoints ------------------
 
 // Signup Endpoint
