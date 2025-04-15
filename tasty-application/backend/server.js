@@ -19,6 +19,13 @@ if (!JWT_SECRET) {
   throw new Error('Please define JWT_SECRET in your environment.');
 }
 
+
+app.use(cors()); // Allow all origins
+
+// Parse incoming JSON requests
+app.use(express.json());
+
+
 // JWT Authentication Middleware
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
@@ -37,11 +44,6 @@ function authenticateToken(req, res, next) {
   });
 }
 
-
-app.use(cors()); // Allow all origins
-
-// Parse incoming JSON requests
-app.use(express.json());
 
 // Connect to MongoDB with a longer timeout for serverless environments
 mongoose
@@ -72,6 +74,11 @@ const UserSchema = new mongoose.Schema({
       id: String,
       name: String,
       thumbnail_url: String,
+/*       description: String,
+      total_time_minutes: Number,
+      user_ratings: {
+        score: Number,
+      }, */
     },
   ],
   lastLogin: { type: Date },
@@ -262,7 +269,7 @@ app.get('/api/favorites', authenticateToken, async (req, res) => {
 
 app.post('/api/favorites', authenticateToken, async (req, res) => {
   try {
-    const { id, name, thumbnail_url } = req.body;
+    const { id, name, thumbnail_url, description, total_time_minutes, user_ratings } = req.body;
     if (!id || !name) {
       return res.status(400).json({ success: false, error: 'Missing recipe data.' });
     }
@@ -275,7 +282,7 @@ app.post('/api/favorites', authenticateToken, async (req, res) => {
     if (alreadyFavorited) {
       return res.status(400).json({ success: false, error: 'Recipe already in favorites.' });
     }
-    user.favorites.push({ id, name, thumbnail_url });
+    user.favorites.push({ id, name, thumbnail_url, description, total_time_minutes, user_ratings });
     await user.save();
     res.status(201).json({ success: true, favorites: user.favorites });
   } catch (err) {
