@@ -18,42 +18,45 @@ const Categories = () => {
     const fetchCategories = async () => {
       try {
         setLoading(true)
-
+  
+        const categoryImagesUrl = `${process.env.REACT_APP_API_URL}/api/category-images`
+        console.log("Fetching category images from:", categoryImagesUrl)
+  
         const [tagsRes, imageResRaw] = await Promise.all([
           getCachedData('tags', () => api.getTags()),
-          fetch(`${process.env.REACT_APP_API_URL}/api/category-images`)
+          fetch(categoryImagesUrl)
         ])
-
+  
         if (!imageResRaw.ok) {
           const text = await imageResRaw.text()
           throw new Error(`Category images fetch failed: ${imageResRaw.status} - ${text}`)
         }
-
+  
         const imagesRes = await imageResRaw.json()
         console.log("Fetched images from backend:", imagesRes.data)
-
+  
         if (tagsRes?.results) {
           const normalize = (str) =>
             str?.toLowerCase().replace(/[\s\-]+/g, '_').replace(/[^a-z0-9_]/g, '')
-
+  
           const imagesMap = new Map(
             (imagesRes?.data || []).map((img) => [normalize(img.categoryId), img.imageUrl])
           )
-
+  
           console.log("Normalized image keys:", [...imagesMap.keys()])
-
+  
           const uniqueCategories = Array.from(
             new Map(tagsRes.results.map((cat) => [cat.name, cat])).values()
           ).map((cat) => {
             const normalizedName = normalize(cat.name)
             const image = imagesMap.get(normalizedName)
-
+  
             return {
               ...cat,
               image: image || "https://via.placeholder.com/150?text=No+Image"
             }
           })
-
+  
           uniqueCategories.sort((a, b) => a.display_name.localeCompare(b.display_name))
           setCategories(uniqueCategories)
         } else {
@@ -66,9 +69,10 @@ const Categories = () => {
         setLoading(false)
       }
     }
-
+  
     fetchCategories()
   }, [getCachedData])
+  
 
   const totalPages = Math.ceil(categories.length / ITEMS_PER_PAGE)
 
