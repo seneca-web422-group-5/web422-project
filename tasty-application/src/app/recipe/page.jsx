@@ -55,22 +55,30 @@ const RecipePage = () => {
 
   const handleToggleFavorite = async () => {
     const token = localStorage.getItem('token')
-    if (!token || !id) return
-
+    if (!token || !id || !recipeDetails) return
+  
     try {
       const endpoint = `${API_URL}/api/favorites${isFavorited ? `/${id}` : ''}`
       const method = isFavorited ? 'DELETE' : 'POST'
-      const body = isFavorited ? null : JSON.stringify({ recipeId: id })
-
+      const headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      }
+  
+      const body = isFavorited
+        ? null
+        : JSON.stringify({
+            id: String(recipeDetails.id),
+            name: recipeDetails.name,
+            thumbnail_url: recipeDetails.thumbnail_url || 'default-image.jpg',
+          })
+  
       const res = await fetch(endpoint, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
         ...(body && { body }),
       })
-
+  
       const data = await res.json()
       if (data.success) {
         setIsFavorited(!isFavorited)
@@ -82,6 +90,7 @@ const RecipePage = () => {
       console.error('Error toggling favorite:', err)
     }
   }
+  
 
   if (loading) return <div>Loading...</div>
   if (error) return <div>{error}</div>

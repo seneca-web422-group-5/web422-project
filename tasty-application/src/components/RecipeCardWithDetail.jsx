@@ -17,7 +17,6 @@ const RecipeCardWithDetail = ({ recipe }) => {
   const [showModal, setShowModal] = useState(false)
   const [page, setPage] = useState(1)
 
-  // Check if recipe is already favorited by the user
   useEffect(() => {
     const checkIfFavorited = async () => {
       const token = localStorage.getItem('token')
@@ -31,7 +30,7 @@ const RecipeCardWithDetail = ({ recipe }) => {
         })
         const data = await res.json()
         if (data.success) {
-          setIsFavorited(data.favorites.some((fav) => fav._id === recipe.id))
+          setIsFavorited(data.favorites.some((fav) => fav.id === String(recipe.id)))
         }
       } catch (err) {
         console.error('Error checking favorites:', err)
@@ -79,7 +78,11 @@ const RecipeCardWithDetail = ({ recipe }) => {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ recipeId: recipe.id }),
+          body: JSON.stringify({
+            id: String(recipe.id),
+            name: recipe.name,
+            thumbnail_url: recipe.thumbnail_url || 'default-image.jpg',
+          }),
         })
       }
 
@@ -97,7 +100,6 @@ const RecipeCardWithDetail = ({ recipe }) => {
   return (
     <>
       <div className="recipe-card">
-        {/* Image */}
         <div className="recipe-card-image" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
           {recipe.thumbnail_url ? (
             <img src={recipe.thumbnail_url} alt={recipe.name} />
@@ -106,25 +108,20 @@ const RecipeCardWithDetail = ({ recipe }) => {
           )}
         </div>
 
-        {/* Title */}
         <h3 className="recipe-card-title" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
           {recipe.name}
         </h3>
 
-        {/* Time */}
         <p className="recipe-card-time">
           <i className="bi bi-clock" style={{ marginRight: '5px', color: '#7F7F7F' }}></i>
           {recipe.total_time_minutes ? `${recipe.total_time_minutes} mins` : 'N/A'}
         </p>
 
-        {/* Icons */}
         <div className="d-flex justify-content-between align-items-center mt-2">
-          {/* Heart */}
           <div className="recommend-card-favorite-icon" onClick={handleFavoriteToggle}>
             <i className={`bi bi-heart${isFavorited ? '-fill' : ''}`}></i>
           </div>
 
-          {/* Info */}
           <div
             className="more-info-icon"
             onClick={(e) => {
@@ -138,7 +135,6 @@ const RecipeCardWithDetail = ({ recipe }) => {
         </div>
       </div>
 
-      {/* Modal */}
       {showModal && (
         <RecipeModal
           selectedRecipe={selectedRecipe}

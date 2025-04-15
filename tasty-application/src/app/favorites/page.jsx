@@ -86,7 +86,7 @@ const Favorites = () => {
               <div className="recipe-card-body">
                 <h3 className="recipe-card-title">{recipe.name}</h3>
                 <div className="d-flex justify-content-between">
-                  <Link to={`/recipe/${recipe._id}`}>
+                  <Link to={`/recipe/${recipe.id}`}>
                     <button className="btn btn-primary btn-sm">View</button>
                   </Link>
                   <button className="btn btn-danger btn-sm" onClick={() => handleRemove(recipe._id)}>
@@ -96,9 +96,10 @@ const Favorites = () => {
               </div>
             </div>
           ))}
-          <Pagination/>
+          
         </div>
       )}
+      <Pagination/>
     </div>
   );
 };
