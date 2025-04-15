@@ -11,14 +11,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { Pagination, Autoplay } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/pagination'
-
-
-const fetchRandomRecipes = async () => {
-  const baseUrl = process.env.REACT_APP_API_URL
-  const res = await fetch(`${baseUrl}/api/random-recipes`)
-  const data = await res.json()
-  return data?.data || []
-}
+import { getRandomRecipes } from '../lib/api'
 
 const Homepage = () => {
   const [loading, setLoading] = useState(true)
@@ -73,7 +66,7 @@ const Homepage = () => {
       try {
         setLoading(true)
         const [rand, cats, recs] = await Promise.all([
-          fetchRandomRecipes(),
+          getRandomRecipes(), 
           getPopularCategories(),
           getFeeds(3, '+0700', 0)
         ])
