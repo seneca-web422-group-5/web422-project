@@ -7,8 +7,12 @@ import RecommendByUs from '../components/RecommendByUs'
 import LatestRecipes from '../components/LatestRecipes'
 import DiscoverMenu from '../components/DiscoverMenu'
 import HomePagecss from '../styles/HomePagecss.css';
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Pagination, Autoplay } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/pagination'
 
-// ⬇️ Add this new helper
+
 const fetchRandomRecipes = async () => {
   const res = await fetch('http://localhost:4000/api/random-recipes')
   const data = await res.json()
@@ -116,40 +120,37 @@ const Homepage = () => {
 
   return (
     <div>
-      {randomRecipe && (
-        <div
-          className="random-recipe bg-secondary p-4 mb-4 mt-4 d-flex flex-column flex-md-row align-items-center"
-          onClick={handleRecipeClick}
-          style={{ cursor: 'pointer' }}
-        >
-          {randomRecipe.thumbnail_url && (
-            <img
-              src={randomRecipe.thumbnail_url}
-              alt={randomRecipe.name}
-              className="img-fluid mb-3 mb-md-0 me-md-4"
-              style={{ maxWidth: '300px', borderRadius: '8px' }}
-            />
-          )}
-          <div>
-            <h2 className="mb-5">Try this amazing recipe!</h2>
-            <h2 className="display-6">{randomRecipe.name}</h2>
-            <p className="text-muted">
-              {randomRecipe.description || 'Try this amazing recipe!'}
-            </p>
-          </div>
-        </div>
-      )}
-
-<div className="random-pagination text-center mb-4">
-  {randomRecipes.map((_, index) => (
-    <span
-      key={index}
-      className={`random-bullet ${index === currentRecipeIndex ? 'active' : ''}`}
-      onClick={() => setCurrentRecipeIndex(index)}
-    />
-  ))}
-</div>
-
+      <Swiper
+        modules={[Pagination, Autoplay]}
+        pagination={{ clickable: true }}
+        autoplay={{ delay: 5000, disableOnInteraction: false }}
+        loop={true}
+        className="random-swiper mb-4"
+      >
+        {randomRecipes.map((recipe) => (
+          <SwiperSlide key={recipe.id}>
+            <div
+              className="random-recipe bg-secondary p-4 mt-4 d-flex flex-column flex-md-row align-items-center"
+              onClick={() => navigate(`/recipe/${recipe.id}`)}
+              style={{ cursor: 'pointer' }}
+            >
+                {recipe.thumbnail_url && (
+                  <img
+                    src={recipe.thumbnail_url}
+                    alt={recipe.name}
+                    className="img-fluid mb-3 mb-md-0 me-md-4"
+                    style={{ maxWidth: '300px', borderRadius: '8px' }}
+                  />
+                )}
+                    <div className="random-recipe-info">
+                      <h2 className="mb-5">Try this amazing recipe!</h2>
+                      <h2 className="display-6">{recipe.name}</h2>
+                      <p className="text-muted">{recipe.description || 'Try this amazing recipe!'}</p>
+                    </div>
+                  </div>
+          </SwiperSlide>
+                      ))}
+      </Swiper>
 
       <DiscoverMenu recipeId={randomRecipe?.id} />
       <PopularCategory categories={categories} />
