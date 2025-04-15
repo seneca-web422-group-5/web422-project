@@ -56,17 +56,6 @@ mongoose
     process.exit(1);
   });
 
-// Category Schema for stroring category images
-const CategoryImageSchema = new mongoose.Schema({
-  categoryId: { type: String, required: true, unique: true }, // e.g., "42"
-  category: { type: String, required: true },                 // e.g., "Breakfast"
-  imageUrl: { type: String, required: true },                 // CDN or static path
-}, { timestamps: true });                                     // createdAt, updatedAt
-
-const CategoryImage = mongoose.models.CategoryImage || mongoose.model('CategoryImage', CategoryImageSchema, 'categoryImages');
-
-export default CategoryImage;
-
 // Define User schema and model (collection: "users")
 // New schema includes bio, title, location, instagram, and lastLogin.
 // Timestamps option automatically adds createdAt and updatedAt.
@@ -105,6 +94,10 @@ app.get('/api/test-db', async (req, res) => {
   }
 });
 
+
+// ------------------ Category-Images Endpoint ------------------
+const categoryImageRoutes = require('./routes/categoryImages')
+app.use('/api/category-images', categoryImageRoutes)
 
 
 // ------------------ Favorite-Related Endpoints ------------------
