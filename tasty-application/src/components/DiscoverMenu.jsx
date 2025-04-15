@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { getSimilarRecipes } from '../lib/api'
 import RecipeCardWithDetail from './RecipeCardWithDetail'
+import SmallPagination from './SmallPagination'
 import '../styles/DiscoverMenu.css'
 
 const DiscoverMenu = ({ recipeId }) => {
@@ -17,7 +18,6 @@ const DiscoverMenu = ({ recipeId }) => {
       try {
         setLoading(true)
 
-        // Check local storage for cached data
         const cachedData = localStorage.getItem(`similarRecipes_${recipeId}`)
         if (cachedData) {
           setSimilarRecipes(JSON.parse(cachedData))
@@ -25,7 +25,6 @@ const DiscoverMenu = ({ recipeId }) => {
           return
         }
 
-        // Fetch from API if not in cache
         const data = await getSimilarRecipes(recipeId)
         const results = data?.results || []
         localStorage.setItem(`similarRecipes_${recipeId}`, JSON.stringify(results))
@@ -41,35 +40,14 @@ const DiscoverMenu = ({ recipeId }) => {
     fetchSimilarRecipes()
   }, [recipeId])
 
-  useEffect(() => {
-    if (similarRecipes.length === 0) return
-
-    const totalPages = Math.ceil(similarRecipes.length / recipesPerPage)
-
-    // const interval = setInterval(() => {
-    //   setCurrentPage((prevPage) => (prevPage === totalPages ? 1 : prevPage + 1))
-    // }, 5000) // Change page every 5 seconds
-
-    // return () => clearInterval(interval)
-  }, [similarRecipes, recipesPerPage])
-
-  if (loading) {
-    return <div>Loading similar recipes...</div>
-  }
-
-  if (error) {
-    return <div>{error}</div>
-  }
-
-  if (similarRecipes.length === 0) {
-    return <div>No similar recipes found.</div>
-  }
-
-  // Pagination logic
   const indexOfLastRecipe = currentPage * recipesPerPage
   const indexOfFirstRecipe = indexOfLastRecipe - recipesPerPage
   const currentRecipes = similarRecipes.slice(indexOfFirstRecipe, indexOfLastRecipe)
   const totalPages = Math.ceil(similarRecipes.length / recipesPerPage)
+
+  if (loading) return <div>Loading similar recipes...</div>
+  if (error) return <div>{error}</div>
+  if (similarRecipes.length === 0) return <div>No similar recipes found.</div>
 
   return (
     <div className="discover-menu-container">
@@ -80,18 +58,11 @@ const DiscoverMenu = ({ recipeId }) => {
         ))}
       </div>
 
-      {/* Pagination Controls */}
-      <div className="pagination">
-        {[...Array(totalPages)].map((_, index) => (
-          <button
-            key={index}
-            className={`pagination-button ${currentPage === index + 1 ? 'active' : ''}`}
-            onClick={() => setCurrentPage(index + 1)}
-          >
-            {index + 1}
-          </button>
-        ))}
-      </div>
+      <SmallPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </div>
   )
 }

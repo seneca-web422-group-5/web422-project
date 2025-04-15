@@ -214,7 +214,7 @@ const Homepage = () => {
             />
           )}
           <div>
-            <h1 className="mb-5">Try this amazing recipe!</h1>
+            <h2 className="mb-5">Try this amazing recipe!</h2>
             <h2 className="display-6">{randomRecipe.name}</h2>
             <p className="text-muted">{randomRecipe.description || 'Try this amazing recipe!'}</p>
           </div>
