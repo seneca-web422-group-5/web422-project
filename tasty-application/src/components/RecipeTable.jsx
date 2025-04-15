@@ -1,47 +1,50 @@
-import React, { useEffect, useRef, useState } from 'react';
-import $ from 'jquery';
-import 'datatables.net';
-import 'datatables.net-dt/css/dataTables.dataTables.min.css';
+import React, { useEffect, useRef, useState } from 'react'
+import $ from 'jquery'
+import 'datatables.net'
+import 'datatables.net-dt/css/dataTables.dataTables.min.css'
+import { useNavigate } from 'react-router-dom'
 import RecipeTablecss from '../styles/RecipeTablecss.css'
 
-const API_URL = 'https://web422-project-server.vercel.app';
+const API_URL = 'https://web422-project-server.vercel.app'
 
 const RecipeTable = () => {
-  const tableRef = useRef(null);
-  const dataTableRef = useRef(null);
-  const [favorites, setFavorites] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const tableRef = useRef(null)
+  const dataTableRef = useRef(null)
+  const [favorites, setFavorites] = useState([])
+  const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchFavorites = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) return;
+      const token = localStorage.getItem('token')
+      if (!token) return
 
       try {
         const res = await fetch(`${API_URL}/api/favorites`, {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+            Authorization: `Bearer ${token}`,
+          },
+        })
 
-        const data = await res.json();
+        const data = await res.json()
         if (data.success) {
-          const formatted = data.favorites.map((fav, index) => ({
+          const formatted = data.favorites.map((fav) => ({
             id: fav.id,
             name: fav.name,
-            rating: Math.floor(Math.random() * 3) + 3 // Fake ratings between 3-5
-          }));
-          setFavorites(formatted);
+            thumbnail_url: fav.thumbnail_url,
+            rating: Math.floor(Math.random() * 3) + 3, // Fake ratings
+          }))
+          setFavorites(formatted)
         }
       } catch (error) {
-        console.error('Error fetching favorites:', error);
+        console.error('Error fetching favorites:', error)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchFavorites();
-  }, []);
+    fetchFavorites()
+  }, [])
 
   useEffect(() => {
     if (!loading && favorites.length && !dataTableRef.current && tableRef.current) {
@@ -53,24 +56,27 @@ const RecipeTable = () => {
             data: null,
             orderable: false,
             width: '5%',
-            render: () => '<input type="checkbox" class="recipe-checkbox" />'
+            render: () => '<input type="checkbox" class="recipe-checkbox" />',
           },
           {
             title: 'Recipe Name',
-            data: 'name',
-            width: '60%'
+            data: null,
+            width: '50%',
+            render: (data, type, row) => {
+              return `<a href="/recipe/${row.id}" class="recipe-link">${row.name}</a>`
+            },
           },
           {
             title: 'Rating',
             data: 'rating',
             width: '15%',
             render: (data) => {
-              let stars = '';
+              let stars = ''
               for (let i = 1; i <= 5; i++) {
-                stars += i <= data ? '★' : '☆';
+                stars += i <= data ? '★' : '☆'
               }
-              return `<span class="star-rating">${stars}</span>`;
-            }
+              return `<span class="star-rating">${stars}</span>`
+            },
           },
           {
             title: 'Actions',
@@ -79,11 +85,10 @@ const RecipeTable = () => {
             width: '20%',
             render: (_, __, row) => `
               <div class="action-buttons">
-                <button class="btn-edit" data-id="${row.id}">Edit</button>
-                <button class="btn-delete" data-id="${row.id}">Delete</button>
+                <button class="btn-delete" data-id="${row.id}">Remove</button>
               </div>
-            `
-          }
+            `,
+          },
         ],
         responsive: true,
         pageLength: 10,
@@ -91,39 +96,54 @@ const RecipeTable = () => {
         pagingType: 'full_numbers',
         dom: '<"top"lf>rt<"bottom"ip>',
         destroy: true,
-        autoWidth: false
-      });
+        autoWidth: false,
+      })
 
-      dataTableRef.current = dt;
+      dataTableRef.current = dt
 
-      $(tableRef.current).on('click', '.btn-delete', function () {
-        const id = $(this).data('id');
-        const row = $(this).closest('tr');
-        dt.row(row).remove().draw();
-      });
+      $(tableRef.current).on('click', '.btn-delete', async function () {
+        const id = $(this).data('id')
+        const row = $(this).closest('tr')
 
-      $(tableRef.current).on('click', '.btn-edit', function () {
-        const id = $(this).data('id');
-        alert(`Would edit recipe ${id}`);
-      });
+        try {
+          const token = localStorage.getItem('token')
+          const res = await fetch(`${API_URL}/api/favorites/${id}`, {
+            method: 'DELETE',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+
+          const data = await res.json()
+          if (data.success) {
+            dt.row(row).remove().draw()
+          } else {
+            console.error(data.error)
+          }
+        } catch (err) {
+          console.error('Error removing favorite:', err)
+        }
+      })
     }
 
     return () => {
       if (dataTableRef.current) {
-        dataTableRef.current.destroy();
-        dataTableRef.current = null;
+        dataTableRef.current.destroy()
+        dataTableRef.current = null
       }
-    };
-  }, [favorites, loading]);
+    }
+  }, [favorites, loading])
 
   return (
     <div className="recipe-table-container">
       <h2>My Favorite Recipes</h2>
-      {loading ? <p>Loading favorites...</p> : <table ref={tableRef} className="display" style={{ width: '100%' }} />}
-
-      {/* Keep your styles here as before */}
+      {loading ? (
+        <p>Loading favorites...</p>
+      ) : (
+        <table ref={tableRef} className="display" style={{ width: '100%' }} />
+      )}
     </div>
-  );
-};
+  )
+}
 
-export default RecipeTable;
+export default RecipeTable
