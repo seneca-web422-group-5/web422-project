@@ -1,7 +1,13 @@
-// CategoryCard.jsx
 import "../styles/CategoryPage.css";
 
-const CategoryCard = ({ category, imageUrl }) => {
+const formatCategoryName = (slug) => {
+  return slug
+    ?.split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
+const CategoryCard = ({ category }) => {
   return (
     <div className="general-category-card">
       <img
@@ -9,7 +15,9 @@ const CategoryCard = ({ category, imageUrl }) => {
         alt={category.display_name}
         className="general-category-image"
       />
-      <p className="general-category-name">{category.display_name}</p>
+      <p className="general-category-name">
+        {formatCategoryName(category.display_name)}
+      </p>
     </div>
   );
 };

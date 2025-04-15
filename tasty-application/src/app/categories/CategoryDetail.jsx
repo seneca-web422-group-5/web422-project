@@ -109,10 +109,18 @@ const CategoryDetailPage = () => {
     return <div>{error}</div>
   }
 
+  const formatCategoryName = (slug) => {
+    return slug
+      .split('_') // splits by underscore
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // capitalizes each
+      .join(' ');
+  };
+  
+
   return (
     <div className="container">
       <div className="d-flex justify-content-between align-items-center mt-4">
-        <h2>{categoryType} Recipes</h2>
+      <h2>{formatCategoryName(categoryType)} Recipes</h2>
         <Sort onSortChange={handleSortChange} />
       </div>
       <hr />
