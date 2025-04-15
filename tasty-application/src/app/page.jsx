@@ -14,7 +14,8 @@ import 'swiper/css/pagination'
 
 
 const fetchRandomRecipes = async () => {
-  const res = await fetch('http://localhost:4000/api/random-recipes')
+  const baseUrl = process.env.REACT_APP_API_URL
+  const res = await fetch(`${baseUrl}/api/random-recipes`)
   const data = await res.json()
   return data?.data || []
 }
