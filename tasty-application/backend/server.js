@@ -43,6 +43,7 @@ mongoose
 
 // Define a simple schema and model for the "users" collection
 const UserSchema = new mongoose.Schema({
+  name: { type: String }, // new field for name (optional required: true if you want it mandatory)
   email: { type: String, required: true },
   password: { type: String, required: true }
 });
