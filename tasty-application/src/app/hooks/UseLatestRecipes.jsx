@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { getLatestRecipes } from '../../lib/api'
 
 export const useLatestRecipes = () => {
@@ -7,11 +7,13 @@ export const useLatestRecipes = () => {
   const [hasMore, setHasMore] = useState(true)
   const PAGE_SIZE = 10
 
+  const hasFetchedRef = useRef(false)
+
   const fetchMore = useCallback(async () => {
     try {
       const data = await getLatestRecipes(from, PAGE_SIZE, 'under_30_minutes')
       const newRecipes = (data?.results || [])
-        .filter(r => r.id !== undefined && r.created_at !== null)
+        .filter(r => r.id && r.created_at)
         .map(r => ({
           id: r.id,
           name: r.name,
@@ -26,6 +28,14 @@ export const useLatestRecipes = () => {
       console.error('Error fetching latest recipes:', err)
     }
   }, [from])
+
+
+  useEffect(() => {
+    if (!hasFetchedRef.current) {
+      fetchMore()
+      hasFetchedRef.current = true
+    }
+  }, [fetchMore])
 
   return { recipes, fetchMore, hasMore }
 }
