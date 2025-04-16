@@ -20,7 +20,26 @@ if (!JWT_SECRET) {
 }
 
 
-app.use(cors()); // Allow all origins
+// app.use(cors()); // Allow all origins
+
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://web422-tasty.vercel.app'
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, Postman)
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
 
 // Parse incoming JSON requests
 app.use(express.json());
