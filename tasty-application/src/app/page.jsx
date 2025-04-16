@@ -1,4 +1,5 @@
 import React from 'react'
+import HomePagecss from '../styles/HomePagecss.css'
 import HeroCarousel from '../components/HeroCarousel'
 import { useHomepageData } from '../app/hooks/useHomepageData'
 import { useLatestRecipes } from '../app/hooks/UseLatestRecipes'
