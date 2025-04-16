@@ -2,14 +2,6 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import '../styles/PopularCategory.css'
 
-// Map category names to local image paths
-const categoryImages = {
-  Italian: require('../assets/images/categories/italian.jpg'),
-  Thai: require('../assets/images/categories/thai.jpg'),
-  Breakfast: require('../assets/images/categories/breakfast.jpg'),
-  Desserts: require('../assets/images/categories/desserts.jpg')
-}
-
 const PopularCategory = ({ categories }) => {
   return (
     <div className="popular-category-container">
@@ -21,12 +13,12 @@ const PopularCategory = ({ categories }) => {
             to={`/categories/${category.name}`}
             className="category-item ms-2"
           >
-            {/* Check if the category has an image */}
-            {categoryImages[category.name] ? (
+            {category.image ? (
               <img
-                src={categoryImages[category.name]}
+                src={category.image}
                 alt={category.name}
                 className="category-icon"
+                loading="lazy"
               />
             ) : (
               <div
