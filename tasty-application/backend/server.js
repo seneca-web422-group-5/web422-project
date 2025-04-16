@@ -20,9 +20,9 @@ if (!JWT_SECRET) {
 }
 
 
-// app.use(cors()); // Allow all origins
+ app.use(cors()); // Allow all origins
 
-const allowedOrigins = [
+/* const allowedOrigins = [
   'http://localhost:3000',
   'https://web422-tasty.vercel.app'
 ];
@@ -38,7 +38,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
-}));
+})); */
 
 
 // Parse incoming JSON requests
