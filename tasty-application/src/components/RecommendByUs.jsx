@@ -66,20 +66,23 @@ const RecommendByUs = ({ recommendations = [] }) => {
             </h3>
 
             {/* author */}
-            <p className="recommend-card-author">by {item.author || 'Unknown'}</p>
+            <p className="recommend-card-author">
+              by {item.credits?.[0]?.name || 'Unknown'}
+            </p>
 
             {/* tags */}
             <div className="recommend-card-tags">
               {Array.isArray(item.tags) && item.tags.length > 0 ? (
                 item.tags.slice(0, 5).map((tag, index) => (
-                  <span key={`${item.id}-${tag}-${index}`} className="recommend-card-tag">
-                    {tag}
+                  <span key={`${item.id}-${tag.id || index}`} className="recommend-card-tag">
+                    {tag.display_name || tag.name || 'Unnamed Tag'}
                   </span>
                 ))
               ) : (
                 <span className="recommend-card-tag">No Tags</span>
               )}
             </div>
+
 
             {/* info icon */}
             <div

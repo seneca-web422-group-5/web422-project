@@ -82,8 +82,10 @@ const Homepage = () => {
           name: item.name,
           thumbnail_url: item.thumbnail_url,
           description: item.description || 'No description',
-          user_ratings: item.user_ratings || null
-        })) || []
+          user_ratings: item.user_ratings || null,
+          tags: item.tags || [],
+          credits: item.credits || []
+        })) || []        
         setRecommendations(mapped)
         await fetchLatestRecipes()
       } catch (err) {

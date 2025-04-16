@@ -1,6 +1,19 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { getAuthorInfo } from '../lib/api' 
 
 const RecipeModal = ({ selectedRecipe, page, setPage, closeModal }) => {
+  const [author, setAuthor] = useState('Loading...')
+
+  useEffect(() => {
+    const fetchAuthor = async () => {
+      if (selectedRecipe?.id) {
+        const name = await getAuthorInfo(selectedRecipe.id)
+        setAuthor(name)
+      }
+    }
+    fetchAuthor()
+  }, [selectedRecipe?.id])
+
   if (!selectedRecipe) return null
 
   return (
@@ -27,7 +40,6 @@ const RecipeModal = ({ selectedRecipe, page, setPage, closeModal }) => {
             )}
             {page === 1 && (
               <>
-                {/* Page 1: Basic Details */}
                 <p>
                   <strong>Description:</strong>{' '}
                   {selectedRecipe.description ? (
@@ -38,16 +50,11 @@ const RecipeModal = ({ selectedRecipe, page, setPage, closeModal }) => {
                     'No description available.'
                   )}
                 </p>
-                <p>
-                  <strong>Author:</strong>{' '}
-                  {selectedRecipe.author ? selectedRecipe.author : 'Author information not available.'}
-                </p>
               </>
             )}
 
             {page === 2 && (
               <>
-                {/* Page 2: Additional Details */}
                 {selectedRecipe.prep_time_minutes && (
                   <p>
                     <strong>Prep Time:</strong> {selectedRecipe.prep_time_minutes} minutes
@@ -73,7 +80,7 @@ const RecipeModal = ({ selectedRecipe, page, setPage, closeModal }) => {
                     <strong>Nutrition:</strong>
                     <ul>
                       {Object.entries(selectedRecipe.nutrition)
-                        .filter(([key]) => key !== 'updated_at') // Exclude the updated_at field
+                        .filter(([key]) => key !== 'updated_at')
                         .map(([key, value]) => (
                           <li key={key}>
                             {key}: {value}
@@ -86,26 +93,17 @@ const RecipeModal = ({ selectedRecipe, page, setPage, closeModal }) => {
             )}
           </div>
           <div className="modal-footer">
-            {/* Navigation Buttons */}
             {page > 1 && (
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() => setPage(page - 1)}
-              >
+              <button className="btn btn-primary" onClick={() => setPage(page - 1)}>
                 Previous
               </button>
             )}
             {page < 2 && (
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() => setPage(page + 1)}
-              >
+              <button className="btn btn-primary" onClick={() => setPage(page + 1)}>
                 Next
               </button>
             )}
-            <button type="button" className="btn btn-secondary" onClick={closeModal}>
+            <button className="btn btn-secondary" onClick={closeModal}>
               Close
             </button>
           </div>

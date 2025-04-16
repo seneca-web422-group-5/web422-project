@@ -4,7 +4,7 @@
 
 const BASE_URL = 'https://tasty.p.rapidapi.com'
 const baseUrl = process.env.REACT_APP_API_URL || 'https://web422-project-server.vercel.app'
-const API_KEY = process.env.REACT_APP_API_KEY // Store securely (e.g., env variables)
+const API_KEY = process.env.REACT_APP_API_KEY 
 
 const fetchFromTastyAPI = async (endpoint, params = {}) => {
   const url = new URL(`${BASE_URL}/${endpoint}`)
@@ -55,6 +55,12 @@ export const getRandomRecipes = async () => {
   const data = await res.json()
   return data?.data || []
 }
+export const getAuthorInfo = async (id) => {
+  const data = await fetchFromTastyAPI('recipes/list-similarities', { recipe_id: id });
+  const match = data?.results?.find(item => item.id === id);
+  return match?.credits?.[0]?.name || 'Unknown';
+}
+
 
 
 // Assign the object to a variable
@@ -70,7 +76,8 @@ const api = {
   getTags,
   getFullDetail,
   getSimilarRecipes,
-  getRandomRecipes
+  getRandomRecipes,
+  getAuthorInfo
 }
 
 export default api

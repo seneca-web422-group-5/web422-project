@@ -20,8 +20,13 @@ const FavoriteCardWithDetail = ({ recipe, onRemove }) => {
     e.stopPropagation()
     setLoading(true)
     try {
-      const fullRecipe = await api.getFullDetail(recipe.id)
+      const [fullRecipe, authorName] = await Promise.all([
+        api.getFullDetail(recipe.id),
+        api.getAuthorInfo(recipe.id),
+      ])
+  
       if (fullRecipe) {
+        fullRecipe.credits = [{ name: authorName }]
         setSelectedRecipe(fullRecipe)
         setShowModal(true)
         setPage(1)
@@ -29,15 +34,15 @@ const FavoriteCardWithDetail = ({ recipe, onRemove }) => {
         console.error('No full recipe data found')
       }
     } catch (err) {
-      console.error('Error fetching full recipe:', err)
+      console.error('Error fetching full recipe or author:', err)
     } finally {
       setLoading(false)
     }
   }
-
+  
   const handleRemove = (e) => {
     e.stopPropagation()
-    if (onRemove) onRemove(recipe._id)
+    if (onRemove) onRemove(recipe.id)
   }
 
   const closeModal = () => {
